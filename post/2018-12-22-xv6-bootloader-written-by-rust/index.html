@@ -76,7 +76,7 @@
   "description" : "はじめに 大遅刻してすみません。 この記事は自作OSアドベントカレンダー９日目の記事です。 ここ半年ぐらいxv6をrustで書き直すことに挑戦しているので、その話を書きます。この記事ではxv6のブートローダーの書き換えについて詳しく書きます。
 ",
   "inLanguage" : "en",
-  "wordCount": 3274,
+  "wordCount": 3167,
   "datePublished" : "2018-12-23T00:00:00",
   "dateModified" : "2018-12-23T00:00:00",
   "image" : "https://youta1119.github.io/img/avatar.png",
@@ -287,7 +287,7 @@ if (!doNotTrack) {
     &nbsp;|&nbsp;<i class="fas fa-clock"></i>&nbsp;7&nbsp;minutes
   
   
-    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;3274&nbsp;words
+    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;3167&nbsp;words
   
   
     &nbsp;|&nbsp;<i class="fas fa-user"></i>&nbsp;yota ogino
@@ -664,21 +664,7 @@ SECTIONS {
 }</pre></div>
 <h2 id="今後の目標">今後の目標</h2>
 
-<p>とりあえず半年くらいかけてlab1のカーネルの部分を実装したいなと思っています。</p>
-
-<h2 id="その他">その他</h2>
-
-<p>アドカレ関係ないんですが、一点わからないことがあるので、詳しい方いたらコメントか<a href="https://twitter.com/youta1119">twitter</a>にて教えてください。</p>
-<div class="highlight"><pre class="chroma"><code class="language-c" data-lang="c"><span class="c1">//ref: https://github.com/youta1119/xv6-rs/blob/master/kernel/lib/entrypgdir.c
-</span><span class="c1"></span><span class="n">__attribute__</span><span class="p">((</span><span class="n">__aligned__</span><span class="p">(</span><span class="n">PGSIZE</span><span class="p">)))</span>
-<span class="n">pde_t</span> <span class="n">entry_pgdir</span><span class="p">[</span><span class="n">NPDENTRIES</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-	<span class="c1">// Map VA&#39;s [0, 4MB) to PA&#39;s [0, 4MB)
-</span><span class="c1"></span>	<span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-		<span class="o">=</span> <span class="p">((</span><span class="n">uintptr_t</span><span class="p">)</span><span class="n">entry_pgtable</span> <span class="o">-</span> <span class="n">KERNBASE</span><span class="p">)</span> <span class="o">+</span> <span class="n">PTE_P</span><span class="p">,</span>
-	<span class="c1">// Map VA&#39;s [KERNBASE, KERNBASE+4MB) to PA&#39;s [0, 4MB)
-</span><span class="c1"></span>	<span class="p">[</span><span class="n">KERNBASE</span><span class="o">&gt;&gt;</span><span class="n">PDXSHIFT</span><span class="p">]</span>
-		<span class="o">=</span> <span class="p">((</span><span class="n">uintptr_t</span><span class="p">)</span><span class="n">entry_pgtable</span> <span class="o">-</span> <span class="n">KERNBASE</span><span class="p">)</span> <span class="o">+</span> <span class="n">PTE_P</span> <span class="o">+</span> <span class="n">PTE_W</span>
-<span class="p">};</span></code></pre></div>
+<p>とりあえず半年くらいかけてカーネルの部分を実装したいなと思っています。</p>
 
         
           <div class="blog-tags">
