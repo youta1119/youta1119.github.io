@@ -7,9 +7,37 @@
     <generator>Hugo -- gohugo.io</generator>
     <managingEditor>dev.youta1119@gmail.com (yota ogino)</managingEditor>
     <webMaster>dev.youta1119@gmail.com (yota ogino)</webMaster>
+    <lastBuildDate>Sun, 23 Dec 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://youta1119.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Rust</title>
+      <link>https://youta1119.github.io/tags/rust/</link>
+      <pubDate>Sun, 23 Dec 2018 00:00:00 +0000</pubDate>
+      <author>dev.youta1119@gmail.com (yota ogino)</author>
+      <guid>https://youta1119.github.io/tags/rust/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Xv6 Rs</title>
+      <link>https://youta1119.github.io/tags/xv6-rs/</link>
+      <pubDate>Sun, 23 Dec 2018 00:00:00 +0000</pubDate>
+      <author>dev.youta1119@gmail.com (yota ogino)</author>
+      <guid>https://youta1119.github.io/tags/xv6-rs/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>自作os</title>
+      <link>https://youta1119.github.io/tags/%E8%87%AA%E4%BD%9Cos/</link>
+      <pubDate>Sun, 23 Dec 2018 00:00:00 +0000</pubDate>
+      <author>dev.youta1119@gmail.com (yota ogino)</author>
+      <guid>https://youta1119.github.io/tags/%E8%87%AA%E4%BD%9Cos/</guid>
+      <description></description>
+    </item>
     
   </channel>
 </rss>
