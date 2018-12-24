@@ -60,7 +60,7 @@ Advent Calendarに空きがあったので投稿することにしました。
         "@type": "ListItem",
         "position": 3,
         "item": {
-          "@id": "https://youta1119.github.io/post/2018/12/24/why-dose-kotlin-native-working/",
+          "@id": "https://youta1119.github.io/post/2018/12/24/about-kotlin-native-stdlib/",
           "name": "Kotlin/ nativeの標準ライブラリの実装について"
         }
     }]
@@ -81,7 +81,7 @@ Advent Calendarに空きがあったので投稿することにしました。
   "dateModified" : "2018-12-24T00:00:00",
   "image" : "https://youta1119.github.io/img/avatar.png",
   "keywords" : [ "kotlin, kotlin-native" ],
-  "mainEntityOfPage" : "https://youta1119.github.io/post/2018/12/24/why-dose-kotlin-native-working/",
+  "mainEntityOfPage" : "https://youta1119.github.io/post/2018/12/24/about-kotlin-native-stdlib/",
   "publisher" : {
     "@type": "Organization",
     "name" : "https://youta1119.github.io",
@@ -102,7 +102,7 @@ Advent Calendarに空きがあったので投稿することにしました。
 Advent Calendarに空きがあったので投稿することにしました。
 この記事ではKotlin/Nativeの標準ライブラリの実装について解説します。">
 <meta property="og:image" content="https://youta1119.github.io/img/avatar.png" />
-<meta property="og:url" content="https://youta1119.github.io/post/2018/12/24/why-dose-kotlin-native-working/" />
+<meta property="og:url" content="https://youta1119.github.io/post/2018/12/24/about-kotlin-native-stdlib/" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="youta1119&#39;s blog" />
   <meta name="twitter:title" content="Kotlin/Nativeの標準ライブラリの実装について" />
@@ -121,7 +121,7 @@ Advent Calendarに空きがあったので投稿することにしました。
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:site" content="@youta1119" />
   <meta name="twitter:creator" content="@youta1119" />
-  <meta property="og:url" content="https://youta1119.github.io/post/2018/12/24/why-dose-kotlin-native-working/" />
+  <meta property="og:url" content="https://youta1119.github.io/post/2018/12/24/about-kotlin-native-stdlib/" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="youta1119&#39;s blog" />
 
@@ -531,49 +531,49 @@ $ ./program.kexe</code></pre></div>
     <ul class="share">
       
       <li>
-        <a href="//twitter.com/share?url=https%3a%2f%2fyouta1119.github.io%2fpost%2f2018%2f12%2f24%2fwhy-dose-kotlin-native-working%2f&amp;text=Kotlin%2fNative%e3%81%ae%e6%a8%99%e6%ba%96%e3%83%a9%e3%82%a4%e3%83%96%e3%83%a9%e3%83%aa%e3%81%ae%e5%ae%9f%e8%a3%85%e3%81%ab%e3%81%a4%e3%81%84%e3%81%a6&amp;via=youta1119" target="_blank" title="Share on Twitter">
+        <a href="//twitter.com/share?url=https%3a%2f%2fyouta1119.github.io%2fpost%2f2018%2f12%2f24%2fabout-kotlin-native-stdlib%2f&amp;text=Kotlin%2fNative%e3%81%ae%e6%a8%99%e6%ba%96%e3%83%a9%e3%82%a4%e3%83%96%e3%83%a9%e3%83%aa%e3%81%ae%e5%ae%9f%e8%a3%85%e3%81%ab%e3%81%a4%e3%81%84%e3%81%a6&amp;via=youta1119" target="_blank" title="Share on Twitter">
           <i class="fab fa-twitter"></i>
         </a>
       </li>
   
       
       <li>
-        <a href="//plus.google.com/share?url=https%3a%2f%2fyouta1119.github.io%2fpost%2f2018%2f12%2f24%2fwhy-dose-kotlin-native-working%2f" target="_blank" title="Share on Google Plus">
+        <a href="//plus.google.com/share?url=https%3a%2f%2fyouta1119.github.io%2fpost%2f2018%2f12%2f24%2fabout-kotlin-native-stdlib%2f" target="_blank" title="Share on Google Plus">
           <i class="fab fa-google-plus"></i>
         </a>
       </li>
   
       
       <li>
-        <a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fyouta1119.github.io%2fpost%2f2018%2f12%2f24%2fwhy-dose-kotlin-native-working%2f" target="_blank" title="Share on Facebook">
+        <a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fyouta1119.github.io%2fpost%2f2018%2f12%2f24%2fabout-kotlin-native-stdlib%2f" target="_blank" title="Share on Facebook">
           <i class="fab fa-facebook"></i>
         </a>
       </li>
   
       
       <li>
-        <a href="//reddit.com/submit?url=https%3a%2f%2fyouta1119.github.io%2fpost%2f2018%2f12%2f24%2fwhy-dose-kotlin-native-working%2f&amp;title=Kotlin%2fNative%e3%81%ae%e6%a8%99%e6%ba%96%e3%83%a9%e3%82%a4%e3%83%96%e3%83%a9%e3%83%aa%e3%81%ae%e5%ae%9f%e8%a3%85%e3%81%ab%e3%81%a4%e3%81%84%e3%81%a6" target="_blank" title="Share on Reddit">
+        <a href="//reddit.com/submit?url=https%3a%2f%2fyouta1119.github.io%2fpost%2f2018%2f12%2f24%2fabout-kotlin-native-stdlib%2f&amp;title=Kotlin%2fNative%e3%81%ae%e6%a8%99%e6%ba%96%e3%83%a9%e3%82%a4%e3%83%96%e3%83%a9%e3%83%aa%e3%81%ae%e5%ae%9f%e8%a3%85%e3%81%ab%e3%81%a4%e3%81%84%e3%81%a6" target="_blank" title="Share on Reddit">
           <i class="fab fa-reddit"></i>
         </a>
       </li>
   
       
       <li>
-        <a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fyouta1119.github.io%2fpost%2f2018%2f12%2f24%2fwhy-dose-kotlin-native-working%2f&amp;title=Kotlin%2fNative%e3%81%ae%e6%a8%99%e6%ba%96%e3%83%a9%e3%82%a4%e3%83%96%e3%83%a9%e3%83%aa%e3%81%ae%e5%ae%9f%e8%a3%85%e3%81%ab%e3%81%a4%e3%81%84%e3%81%a6" target="_blank" title="Share on LinkedIn">
+        <a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fyouta1119.github.io%2fpost%2f2018%2f12%2f24%2fabout-kotlin-native-stdlib%2f&amp;title=Kotlin%2fNative%e3%81%ae%e6%a8%99%e6%ba%96%e3%83%a9%e3%82%a4%e3%83%96%e3%83%a9%e3%83%aa%e3%81%ae%e5%ae%9f%e8%a3%85%e3%81%ab%e3%81%a4%e3%81%84%e3%81%a6" target="_blank" title="Share on LinkedIn">
           <i class="fab fa-linkedin"></i>
         </a>
       </li>
   
       
       <li>
-        <a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fyouta1119.github.io%2fpost%2f2018%2f12%2f24%2fwhy-dose-kotlin-native-working%2f&amp;title=Kotlin%2fNative%e3%81%ae%e6%a8%99%e6%ba%96%e3%83%a9%e3%82%a4%e3%83%96%e3%83%a9%e3%83%aa%e3%81%ae%e5%ae%9f%e8%a3%85%e3%81%ab%e3%81%a4%e3%81%84%e3%81%a6" target="_blank" title="Share on StumbleUpon">
+        <a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fyouta1119.github.io%2fpost%2f2018%2f12%2f24%2fabout-kotlin-native-stdlib%2f&amp;title=Kotlin%2fNative%e3%81%ae%e6%a8%99%e6%ba%96%e3%83%a9%e3%82%a4%e3%83%96%e3%83%a9%e3%83%aa%e3%81%ae%e5%ae%9f%e8%a3%85%e3%81%ab%e3%81%a4%e3%81%84%e3%81%a6" target="_blank" title="Share on StumbleUpon">
           <i class="fab fa-stumbleupon"></i>
         </a>
       </li>
   
       
       <li>
-        <a href="//www.pinterest.com/pin/create/button/?url=https%3a%2f%2fyouta1119.github.io%2fpost%2f2018%2f12%2f24%2fwhy-dose-kotlin-native-working%2f&amp;description=Kotlin%2fNative%e3%81%ae%e6%a8%99%e6%ba%96%e3%83%a9%e3%82%a4%e3%83%96%e3%83%a9%e3%83%aa%e3%81%ae%e5%ae%9f%e8%a3%85%e3%81%ab%e3%81%a4%e3%81%84%e3%81%a6" target="_blank" title="Share on Pinterest">
+        <a href="//www.pinterest.com/pin/create/button/?url=https%3a%2f%2fyouta1119.github.io%2fpost%2f2018%2f12%2f24%2fabout-kotlin-native-stdlib%2f&amp;description=Kotlin%2fNative%e3%81%ae%e6%a8%99%e6%ba%96%e3%83%a9%e3%82%a4%e3%83%96%e3%83%a9%e3%83%aa%e3%81%ae%e5%ae%9f%e8%a3%85%e3%81%ab%e3%81%a4%e3%81%84%e3%81%a6" target="_blank" title="Share on Pinterest">
           <i class="fab fa-pinterest"></i>
         </a>
       </li>
@@ -606,12 +606,12 @@ $ ./program.kexe</code></pre></div>
         
           
           <div class="disqus-comments">                  
-            <button id="show-comments" class="btn btn-default" type="button">Show <span class="disqus-comment-count" data-disqus-url="https://youta1119.github.io/post/2018/12/24/why-dose-kotlin-native-working">comments</span></button>
+            <button id="show-comments" class="btn btn-default" type="button">Show <span class="disqus-comment-count" data-disqus-url="https://youta1119.github.io/post/2018/12/24/about-kotlin-native-stdlib">comments</span></button>
             <div id="disqus_thread"></div>
 
             <script type="text/javascript">
               var disqus_config = function () {
-              this.page.url = 'https:\/\/youta1119.github.io\/post\/2018\/12\/24\/why-dose-kotlin-native-working';
+              this.page.url = 'https:\/\/youta1119.github.io\/post\/2018\/12\/24\/about-kotlin-native-stdlib';
             };
 
           </script>
