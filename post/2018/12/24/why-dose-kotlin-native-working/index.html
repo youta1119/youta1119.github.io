@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+  <head>
+    
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <title>Kotlin/Nativeの標準ライブラリの実装について - youta1119&#39;s blog</title>
+  <meta property="og:title" content="Kotlin/Nativeの標準ライブラリの実装について" />
+  <meta name="twitter:title" content="Kotlin/Nativeの標準ライブラリの実装について" />
+  <meta name="description" content="はじめに
+
+この記事はKotlinアドベントカレンダー24日目の記事です。
+Advent Calendarに空きがあったので投稿することにしました。
+この記事ではKotlin/Nativeの標準ライブラリの実装について解説します。">
+  <meta property="og:description" content="はじめに
+
+この記事はKotlinアドベントカレンダー24日目の記事です。
+Advent Calendarに空きがあったので投稿することにしました。
+この記事ではKotlin/Nativeの標準ライブラリの実装について解説します。">
+  <meta name="twitter:description" content="はじめに
+
+この記事はKotlinアドベントカレンダー24日目の記事です。
+Advent Calendarに空きがあったので投稿することにしました。
+この記事ではKotlin/Nativeの標準ライブラリの実装について解説します。">
+  <meta name="author" content="yota ogino"/><script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "WebSite",
+    "name": "youta1119&#39;s blog",
+    
+    "url": "https://youta1119.github.io"
+}
+</script><script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Organization",
+  "name": "",
+  "url": "https://youta1119.github.io"
+  
+  
+  
+  
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [{
+        "@type": "ListItem",
+        "position": 1,
+        "item": {
+          "@id": "https://youta1119.github.io",
+          "name": "home"
+        }
+    },{
+        "@type": "ListItem",
+        "position": 3,
+        "item": {
+          "@id": "https://youta1119.github.io/post/2018/12/24/why-dose-kotlin-native-working/",
+          "name": "Kotlin/ nativeの標準ライブラリの実装について"
+        }
+    }]
+}
+</script><script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Article",
+  "author": {
+    "name" : "yota ogino"
+  },
+  "headline": "Kotlin/Nativeの標準ライブラリの実装について",
+  "description" : "はじめに この記事はKotlinアドベントカレンダー24日目の記事です。 Advent Calendarに空きがあったので投稿することにしました。 この記事ではKotlin/Nativeの標準ライブラリの実装について解説します。
+",
+  "inLanguage" : "en",
+  "wordCount": 2478,
+  "datePublished" : "2018-12-24T00:00:00",
+  "dateModified" : "2018-12-24T00:00:00",
+  "image" : "https://youta1119.github.io/img/avatar.png",
+  "keywords" : [ "kotlin, kotlin-native" ],
+  "mainEntityOfPage" : "https://youta1119.github.io/post/2018/12/24/why-dose-kotlin-native-working/",
+  "publisher" : {
+    "@type": "Organization",
+    "name" : "https://youta1119.github.io",
+    "logo" : {
+        "@type" : "ImageObject",
+        "url" : "https://youta1119.github.io/img/avatar.png",
+        "height" :  60 ,
+        "width" :  60
+    }
+  }
+}
+</script>
+
+<meta property="og:title" content="Kotlin/Nativeの標準ライブラリの実装について" />
+<meta property="og:description" content="はじめに
+
+この記事はKotlinアドベントカレンダー24日目の記事です。
+Advent Calendarに空きがあったので投稿することにしました。
+この記事ではKotlin/Nativeの標準ライブラリの実装について解説します。">
+<meta property="og:image" content="https://youta1119.github.io/img/avatar.png" />
+<meta property="og:url" content="https://youta1119.github.io/post/2018/12/24/why-dose-kotlin-native-working/" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="youta1119&#39;s blog" />
+  <meta name="twitter:title" content="Kotlin/Nativeの標準ライブラリの実装について" />
+  <meta name="twitter:description" content="はじめに
+
+この記事はKotlinアドベントカレンダー24日目の記事です。
+Advent Calendarに空きがあったので投稿することにしました。
+この記事ではKotlin/Nativeの標準ライブラリの実装について解説します。">
+  <meta name="twitter:image" content="https://youta1119.github.io/img/avatar.png" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@youta1119" />
+  <meta name="twitter:creator" content="@youta1119" />
+  <link href='https://youta1119.github.io/img/favicon.ico' rel='icon' type='image/x-icon'/>
+  <meta property="og:image" content="https://youta1119.github.io/img/avatar.png" />
+  <meta name="twitter:image" content="https://youta1119.github.io/img/avatar.png" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@youta1119" />
+  <meta name="twitter:creator" content="@youta1119" />
+  <meta property="og:url" content="https://youta1119.github.io/post/2018/12/24/why-dose-kotlin-native-working/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="youta1119&#39;s blog" />
+
+  <meta name="generator" content="Hugo 0.52" />
+  <link rel="alternate" href="https://youta1119.github.io/index.xml" type="application/rss+xml" title="youta1119&#39;s blog">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://youta1119.github.io/css/main.css" /><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" />
+  <link rel="stylesheet" href="https://youta1119.github.io/css/highlight.min.css" /><link rel="stylesheet" href="https://youta1119.github.io/css/codeblock.css" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.css" integrity="sha384-h/L2W9KefUClHWaty3SLE5F/qvc4djlyR4qY3NUV5HGQBBW7stbcfff1+I/vmsHh" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/default-skin/default-skin.min.css" integrity="sha384-iD0dNku6PYSIQLyfTOpB06F2KCZJAKLOThS5HRe8b3ibhdEQ6eKsFf/EeFxdOt5R" crossorigin="anonymous">
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-131292272-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+  </head>
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top navbar-custom">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="https://youta1119.github.io">youta1119&#39;s blog</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="main-navbar">
+      <ul class="nav navbar-nav navbar-right">
+        
+          
+            <li>
+              <a title="Blog" href="/">Blog</a>
+            </li>
+          
+        
+          
+            <li>
+              <a title="About" href="/page/about/">About</a>
+            </li>
+          
+        
+          
+            <li>
+              <a title="Tags" href="/tags">Tags</a>
+            </li>
+          
+        
+
+        
+
+        
+      </ul>
+    </div>
+
+    
+      <div class="avatar-container">
+        <div class="avatar-img-border">
+          <a title="youta1119&#39;s blog" href="https://youta1119.github.io">
+            <img class="avatar-img" src="https://youta1119.github.io/img/avatar.png" alt="youta1119&#39;s blog" />
+          </a>
+        </div>
+      </div>
+    
+
+  </div>
+</nav>
+
+
+
+
+    
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+
+  
+  
+  
+
+
+
+
+
+
+  
+
+  <header class="header-section ">
+    
+    <div class="intro-header no-img">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            <div class="post-heading">
+              
+                <h1>Kotlin/Nativeの標準ライブラリの実装について</h1>
+              
+              
+              
+              
+                <span class="post-meta">
+  
+  
+  <i class="fas fa-calendar"></i>&nbsp;Posted on December 24, 2018
+  
+  
+    &nbsp;|&nbsp;<i class="fas fa-clock"></i>&nbsp;5&nbsp;minutes
+  
+  
+    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;2478&nbsp;words
+  
+  
+    &nbsp;|&nbsp;<i class="fas fa-user"></i>&nbsp;yota ogino
+  
+  
+</span>
+
+
+              
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+
+    
+<div class="container" role="main">
+  <div class="row">
+    <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+      <article role="main" class="blog-post">
+        <h2 id="はじめに">はじめに</h2>
+
+<p>この記事は<a href="https://qiita.com/advent-calendar/2018/kotlin">Kotlinアドベントカレンダー</a>24日目の記事です。
+Advent Calendarに空きがあったので投稿することにしました。
+この記事ではKotlin/Nativeの標準ライブラリの実装について解説します。</p>
+
+<h3 id="検証環境">検証環境</h3>
+
+<ul>
+<li>Kotlin Native v1.0.3</li>
+<li>macOS  Mojave 10.14.2</li>
+</ul>
+
+<h2 id="kotlin-nativeとは">Kotlin/Nativeとは</h2>
+
+<p>Kotlin/NativeはKotlinのコードをネイティブバイナリにコンパイルしてくれるものです。
+各プラットフォーム・アーキテクチャ向けのネイティブバイナリが生成されるので、Jvm KotlinのようなVM環境なども必要なく、ネイティブ環境のままで動作します。</p>
+
+<p>現在は以下のプラットフォームがサポートされています。</p>
+
+<ul>
+<li>iOS (arm32, arm64, emulator x86_64)</li>
+<li>macOS (x86_64)</li>
+<li>Android (arm32, arm64)</li>
+<li>Windows (mingw x86_64)</li>
+<li>Linux (x86_64, arm32, MIPS, MIPS little endian)</li>
+<li>WebAssembly (wasm32)</li>
+</ul>
+
+<h2 id="kotlin-nativeの標準ライブラリの実装について">Kotlin/Nativeの標準ライブラリの実装について</h2>
+
+<p>Kotlin/Nativeの標準ライブラリの実装の解説の前にKotlin/Nativeの<a href="https://github.com/JetBrains/kotlin-native">リポジトリ</a>の構造を解説したいと思います。
+Kotlin/Nativeのリポジトリの構造は以下のようになっていて、直下のディレクトリgradleモジュールになっています。
+ソースコードを軽く読んでみた感じそれぞれのモジュールは以下のような役割をもっているみたいです。</p>
+<div class="highlight"><pre class="chroma">.
+├── Interop c言語との相互運用のためのモジュール
+├── backend.native コンパイラ本体
+├── buildSrc
+├── cmd
+├── common 
+├── dependencies
+├── extracted
+├── gradle
+├── klib
+├── konan
+├── libclangext 
+├── licenses
+├── llvmDebugInfoC
+├── performance
+├── platformLibs　各プラットフォーム向けの実装
+├── runtime　標準ライブラリとプログラムランチャーの実装
+├── samples
+├── shared
+├── tools</pre></div>
+<p>今回はKotlin/Nativeの標準ライブラリの実装の解説ですので、runtimeモジュールを見ていきます。
+Kotlin/Nativeの標準ライブラリの実装はruntimeモジュールの<code>src/main</code>以下にあります。
+<code>src/main</code>のディレクトリ構造はこのようになっています。</p>
+<div class="highlight"><pre class="chroma">.
+├── cpp
+├── js
+    ├── math.js kotlin.mathをjavascriptのMath関数で置き換えてる(今回は取り扱わない)
+└── kotlin</pre></div>
+<p>ディレクトリ構造からお察しだと思いますが、<strong>なんとKotlin/Nativeの標準ライブラリではC++も使われています。</strong></p>
+
+<p>調べてみたところKotlin/Nativeの標準ライブラリの実装方法には2種類の方法があるようです。</p>
+
+<ul>
+<li>C++とKotlinがミックスされて実装されているもの</li>
+<li>Kotlinのみで実装されているもの</li>
+</ul>
+
+<p>Kotlinのみで実装されているものに関しては、普通のKotlinプログラムですので特に解説はしません。
+例として<a href="https://github.com/JetBrains/kotlin-native/tree/v1.0.3/runtime/src/main/kotlin/kotlin/ranges">ranges</a>, <a href="https://github.com/JetBrains/kotlin-native/tree/v1.0.3/runtime/src/main/kotlin/kotlin/coroutines">coroutines</a>があります。</p>
+
+<p>C++とKotlinがミックスされて実装されているものについて解説したいと思います。
+C++とKotlinがミックスされて実装されているものの例として<a href="https://github.com/JetBrains/kotlin-native/blob/v1.0.3/runtime/src/main/kotlin/kotlin/String.kt">Stringクラス</a>があります。
+標準ライブラリのStringの実装はこのようになっています。</p>
+<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">package</span> <span class="nn">kotlin</span>
+
+<span class="k">import</span> <span class="nn">kotlin.native.internal.ExportTypeInfo</span>
+<span class="k">import</span> <span class="nn">kotlin.native.internal.Frozen</span>
+
+<span class="n">@ExportTypeInfo</span><span class="p">(</span><span class="s">&#34;theStringTypeInfo&#34;</span><span class="p">)</span> <span class="c1">//Objective-Cとの相互運用で必要ぽい
+</span><span class="c1"></span><span class="n">@Frozen</span> <span class="c1">//thread/worker
+</span><span class="c1"></span><span class="k">public</span> <span class="k">final</span> <span class="k">class</span> <span class="nc">String</span> <span class="p">:</span> <span class="n">Comparable</span><span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;,</span> <span class="n">CharSequence</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="k">companion</span> <span class="k">object</span> <span class="p">{</span>
+    <span class="p">}</span>
+
+    <span class="n">@SymbolName</span><span class="p">(</span><span class="s">&#34;Kotlin_String_hashCode&#34;</span><span class="p">)</span>
+    <span class="k">external</span> <span class="k">public</span> <span class="k">override</span> <span class="k">fun</span> <span class="nf">hashCode</span><span class="p">():</span> <span class="n">Int</span>
+
+    <span class="k">public</span> <span class="k">operator</span> <span class="k">fun</span> <span class="nf">plus</span><span class="p">(</span><span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">?):</span> <span class="n">String</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">plusImpl</span><span class="p">(</span><span class="n">other</span><span class="p">.</span><span class="n">toString</span><span class="p">())</span>
+    <span class="p">}</span>
+
+    <span class="k">override</span> <span class="k">public</span> <span class="k">fun</span> <span class="nf">toString</span><span class="p">():</span> <span class="n">String</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">this</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">override</span> <span class="k">val</span> <span class="py">length</span><span class="p">:</span> <span class="n">Int</span>
+        <span class="k">get</span><span class="p">()</span> <span class="p">=</span> <span class="n">getStringLength</span><span class="p">()</span>
+
+    <span class="n">@SymbolName</span><span class="p">(</span><span class="s">&#34;Kotlin_String_get&#34;</span><span class="p">)</span>
+    <span class="k">external</span> <span class="k">override</span> <span class="k">public</span> <span class="k">fun</span> <span class="nf">get</span><span class="p">(</span><span class="n">index</span><span class="p">:</span> <span class="n">Int</span><span class="p">):</span> <span class="n">Char</span>
+
+    <span class="n">@SymbolName</span><span class="p">(</span><span class="s">&#34;Kotlin_String_subSequence&#34;</span><span class="p">)</span>
+    <span class="k">external</span> <span class="k">override</span> <span class="k">public</span> <span class="k">fun</span> <span class="nf">subSequence</span><span class="p">(</span><span class="n">startIndex</span><span class="p">:</span> <span class="n">Int</span><span class="p">,</span> <span class="n">endIndex</span><span class="p">:</span> <span class="n">Int</span><span class="p">):</span> <span class="n">CharSequence</span>
+
+    <span class="n">@SymbolName</span><span class="p">(</span><span class="s">&#34;Kotlin_String_compareTo&#34;</span><span class="p">)</span>
+    <span class="k">override</span> <span class="k">external</span> <span class="k">public</span> <span class="k">fun</span> <span class="nf">compareTo</span><span class="p">(</span><span class="n">other</span><span class="p">:</span> <span class="n">String</span><span class="p">):</span> <span class="n">Int</span>
+
+    <span class="n">@SymbolName</span><span class="p">(</span><span class="s">&#34;Kotlin_String_getStringLength&#34;</span><span class="p">)</span>
+    <span class="k">external</span> <span class="k">private</span> <span class="k">fun</span> <span class="nf">getStringLength</span><span class="p">():</span> <span class="n">Int</span>
+
+    <span class="n">@SymbolName</span><span class="p">(</span><span class="s">&#34;Kotlin_String_plusImpl&#34;</span><span class="p">)</span>
+    <span class="k">external</span> <span class="k">private</span> <span class="k">fun</span> <span class="nf">plusImpl</span><span class="p">(</span><span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span> <span class="n">String</span>
+
+    <span class="n">@SymbolName</span><span class="p">(</span><span class="s">&#34;Kotlin_String_equals&#34;</span><span class="p">)</span>
+    <span class="k">external</span> <span class="k">public</span> <span class="k">override</span> <span class="k">fun</span> <span class="nf">equals</span><span class="p">(</span><span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">?):</span> <span class="n">Boolean</span>
+<span class="p">}</span></code></pre></div>
+<p>いろいろツッコミどころがあると思いますが一旦無視して、Stringクラスのgetメソッドに注目します。</p>
+<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="n">@SymbolName</span><span class="p">(</span><span class="s">&#34;Kotlin_String_get&#34;</span><span class="p">)</span>
+<span class="k">external</span> <span class="k">override</span> <span class="k">public</span> <span class="k">fun</span> <span class="nf">get</span><span class="p">(</span><span class="n">index</span><span class="p">:</span> <span class="n">Int</span><span class="p">):</span> <span class="n">Char</span></code></pre></div>
+<p>関数の頭に<code>external</code>がついてますね、これはメソッドの定義が外部ファイルにあることをコンパイラに伝えるためのです。
+おそらくC言語<code>extern</code>と同様のものだと思われます。</p>
+
+<p>では実際の関数の定義はどこにあるのでしょうか？<code>@SymbolName</code>という謎のアノテーションが関数についてますね。
+実はこれ、C++の関数名と対応していて、getメソッドが呼ばれる, C++の関数<code>Kotlin_String_get</code>が呼ばれるようになっています。
+ちなみに、<code>Kotlin_String_get</code>のC++での<a href="https://github.com/JetBrains/kotlin-native/blob/v1.0.3/runtime/src/main/cpp/KString.cpp#L763">実装</a>はこうなっています。</p>
+<div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">KChar</span> <span class="nf">Kotlin_String_get</span><span class="p">(</span><span class="n">KString</span> <span class="n">thiz</span><span class="p">,</span> <span class="n">KInt</span> <span class="n">index</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">uint32_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">thiz</span><span class="o">-&gt;</span><span class="n">count_</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">ThrowArrayIndexOutOfBoundsException</span><span class="p">();</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="o">*</span><span class="n">CharArrayAddressOfElementAt</span><span class="p">(</span><span class="n">thiz</span><span class="p">,</span> <span class="n">index</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>このようにC++とKotlinがミックスされて実装されているものは、Kotlin側では関数の定義のみを行い、関数の実装はC++側で実装するという形になってます。
+このとき<code>@SymbolName</code>アノテーションの引数で指定した関数を呼び出すようなコードを生成するのは、コンパイラが行っています。</p>
+
+<h3 id="検証してみる">検証してみる</h3>
+
+<p>本当にKotlin側でStringクラスのgetメソッドがよばれたらC++の関数が呼ばれるのか検証したいと思います。
+ものすごく簡単なコードを用意しました。</p>
+<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">fun</span> <span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="n">Array</span><span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;)</span> <span class="p">{</span>
+    <span class="k">val</span> <span class="py">s</span> <span class="p">=</span> <span class="s">&#34;hoge&#34;</span>
+	<span class="n">println</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="m">0</span><span class="p">))</span>
+<span class="p">}</span></code></pre></div>
+<p>コンパイルして動かしてみます。</p>
+<div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ kotlinc-native main.kt
+$ ./program.kexe</code></pre></div>
+<p><code>h</code>が出力されるはずです。</p>
+
+<p>さて本当に<code>Kotlin_String_get</code>が呼ばれてるのか,アセンブリを見てみましょう。</p>
+<div class="highlight"><pre class="chroma">objdump -S program.kexe  &gt; dump.asm</pre></div>
+<p>objdumpでアセンブリを出力します。めちゃくちゃ長いアセンブリが出力されます(17万行)。
+9万行目くらいにmain関数のアセンブリをみつけました。</p>
+<div class="highlight"><pre class="chroma">_kfun:main(kotlin.Array&lt;kotlin.String&gt;):
+1000080a0:	55 	pushq	%rbp
+1000080a1:	48 89 e5 	movq	%rsp, %rbp
+1000080a4:	53 	pushq	%rbx
+1000080a5:	48 83 ec 18 	subq	$24, %rsp
+1000080a9:	48 89 fb 	movq	%rdi, %rbx
+1000080ac:	0f 57 c0 	xorps	%xmm0, %xmm0
+1000080af:	0f 29 45 e0 	movaps	%xmm0, -32(%rbp)
+1000080b3:	48 c7 45 f0 00 00 00 00 	movq	$0, -16(%rbp)
+1000080bb:	48 8d 7d e0 	leaq	-32(%rbp), %rdi
+1000080bf:	be 01 00 00 00 	movl	$1, %esi
+1000080c4:	ba 03 00 00 00 	movl	$3, %edx
+1000080c9:	e8 52 3a 04 00 	callq	277074 &lt;_EnterFrame&gt;
+1000080ce:	48 89 5d e8 	movq	%rbx, -24(%rbp)
+1000080d2:	48 8d 3d 97 60 07 00 	leaq	483479(%rip), %rdi
+1000080d9:	31 f6 	xorl	%esi, %esi
+1000080db:	e8 10 09 04 00 	callq	264464 &lt;_Kotlin_String_get&gt;
+1000080e0:	48 8d 75 f0 	leaq	-16(%rbp), %rsi
+1000080e4:	89 c7 	movl	%eax, %edi
+1000080e6:	e8 85 90 01 00 	callq	102533 &lt;_kfun:kotlin.Char.&lt;box&gt;(kotlin.Char)kotlin.Any&gt;
+1000080eb:	48 89 c7 	movq	%rax, %rdi
+1000080ee:	e8 ed 84 02 00 	callq	165101 &lt;_kfun:kotlin.io.println(kotlin.Any?)&gt;
+1000080f3:	48 8d 7d e0 	leaq	-32(%rbp), %rdi
+1000080f7:	be 01 00 00 00 	movl	$1, %esi
+1000080fc:	ba 03 00 00 00 	movl	$3, %edx
+100008101:	e8 2a 3a 04 00 	callq	277034 &lt;_LeaveFrame&gt;
+100008106:	48 83 c4 18 	addq	$24, %rsp
+10000810a:	5b 	popq	%rbx
+10000810b:	5d 	popq	%rbp
+10000810c:	c3 	retq
+10000810d:	48 89 c3 	movq	%rax, %rbx
+100008110:	48 8d 7d e0 	leaq	-32(%rbp), %rdi
+100008114:	be 01 00 00 00 	movl	$1, %esi
+100008119:	ba 03 00 00 00 	movl	$3, %edx
+10000811e:	e8 0d 3a 04 00 	callq	277005 &lt;_LeaveFrame&gt;
+100008123:	48 89 df 	movq	%rbx, %rdi
+100008126:	e8 ed 7b 04 00 	callq	293869
+10000812b:	0f 1f 44 00 00 	nopl	(%rax,%rax)</pre></div>
+<p>main関数のアセンブリをじっくりみていくとありました。ちゃんと呼ばれてますね。</p>
+<div class="highlight"><pre class="chroma">1000080db:	e8 10 09 04 00 	callq	264464 &lt;_Kotlin_String_get&gt;</pre></div>
+<h2 id="終わりに">終わりに</h2>
+
+<p>今度気が向いたらKotlinのコードがKotlin/Nativeのコンパイラ上でどのようにネイティブバイナリに変換されるかについて詳しく書こうと思います。
+需要ありますかね？</p>
+
+        
+          <div class="blog-tags">
+            
+              <a href="https://youta1119.github.io/tags/kotlin/">kotlin</a>&nbsp;
+            
+              <a href="https://youta1119.github.io/tags/kotlin-native/">kotlin-native</a>&nbsp;
+            
+          </div>
+        
+
+        
+            <hr/>
+            <section id="social-share">
+              <div class="list-inline footer-links">
+                
+
+<div class="share-box" aria-hidden="true">
+    <ul class="share">
+      
+      <li>
+        <a href="//twitter.com/share?url=https%3a%2f%2fyouta1119.github.io%2fpost%2f2018%2f12%2f24%2fwhy-dose-kotlin-native-working%2f&amp;text=Kotlin%2fNative%e3%81%ae%e6%a8%99%e6%ba%96%e3%83%a9%e3%82%a4%e3%83%96%e3%83%a9%e3%83%aa%e3%81%ae%e5%ae%9f%e8%a3%85%e3%81%ab%e3%81%a4%e3%81%84%e3%81%a6&amp;via=youta1119" target="_blank" title="Share on Twitter">
+          <i class="fab fa-twitter"></i>
+        </a>
+      </li>
+  
+      
+      <li>
+        <a href="//plus.google.com/share?url=https%3a%2f%2fyouta1119.github.io%2fpost%2f2018%2f12%2f24%2fwhy-dose-kotlin-native-working%2f" target="_blank" title="Share on Google Plus">
+          <i class="fab fa-google-plus"></i>
+        </a>
+      </li>
+  
+      
+      <li>
+        <a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fyouta1119.github.io%2fpost%2f2018%2f12%2f24%2fwhy-dose-kotlin-native-working%2f" target="_blank" title="Share on Facebook">
+          <i class="fab fa-facebook"></i>
+        </a>
+      </li>
+  
+      
+      <li>
+        <a href="//reddit.com/submit?url=https%3a%2f%2fyouta1119.github.io%2fpost%2f2018%2f12%2f24%2fwhy-dose-kotlin-native-working%2f&amp;title=Kotlin%2fNative%e3%81%ae%e6%a8%99%e6%ba%96%e3%83%a9%e3%82%a4%e3%83%96%e3%83%a9%e3%83%aa%e3%81%ae%e5%ae%9f%e8%a3%85%e3%81%ab%e3%81%a4%e3%81%84%e3%81%a6" target="_blank" title="Share on Reddit">
+          <i class="fab fa-reddit"></i>
+        </a>
+      </li>
+  
+      
+      <li>
+        <a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fyouta1119.github.io%2fpost%2f2018%2f12%2f24%2fwhy-dose-kotlin-native-working%2f&amp;title=Kotlin%2fNative%e3%81%ae%e6%a8%99%e6%ba%96%e3%83%a9%e3%82%a4%e3%83%96%e3%83%a9%e3%83%aa%e3%81%ae%e5%ae%9f%e8%a3%85%e3%81%ab%e3%81%a4%e3%81%84%e3%81%a6" target="_blank" title="Share on LinkedIn">
+          <i class="fab fa-linkedin"></i>
+        </a>
+      </li>
+  
+      
+      <li>
+        <a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fyouta1119.github.io%2fpost%2f2018%2f12%2f24%2fwhy-dose-kotlin-native-working%2f&amp;title=Kotlin%2fNative%e3%81%ae%e6%a8%99%e6%ba%96%e3%83%a9%e3%82%a4%e3%83%96%e3%83%a9%e3%83%aa%e3%81%ae%e5%ae%9f%e8%a3%85%e3%81%ab%e3%81%a4%e3%81%84%e3%81%a6" target="_blank" title="Share on StumbleUpon">
+          <i class="fab fa-stumbleupon"></i>
+        </a>
+      </li>
+  
+      
+      <li>
+        <a href="//www.pinterest.com/pin/create/button/?url=https%3a%2f%2fyouta1119.github.io%2fpost%2f2018%2f12%2f24%2fwhy-dose-kotlin-native-working%2f&amp;description=Kotlin%2fNative%e3%81%ae%e6%a8%99%e6%ba%96%e3%83%a9%e3%82%a4%e3%83%96%e3%83%a9%e3%83%aa%e3%81%ae%e5%ae%9f%e8%a3%85%e3%81%ab%e3%81%a4%e3%81%84%e3%81%a6" target="_blank" title="Share on Pinterest">
+          <i class="fab fa-pinterest"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+  
+              </div>
+            </section>
+        
+
+        
+          
+          
+        
+      </article>
+
+      
+        <ul class="pager blog-pager">
+          
+            <li class="previous">
+              <a href="https://youta1119.github.io/post/2018/12/23/xv6-bootloader-written-by-rust/" data-toggle="tooltip" data-placement="top" title="xv6のブートローダーをrustで書き直す">&larr; Previous Post</a>
+            </li>
+          
+          
+        </ul>
+      
+
+
+      
+        
+          
+          <div class="disqus-comments">                  
+            <button id="show-comments" class="btn btn-default" type="button">Show <span class="disqus-comment-count" data-disqus-url="https://youta1119.github.io/post/2018/12/24/why-dose-kotlin-native-working">comments</span></button>
+            <div id="disqus_thread"></div>
+
+            <script type="text/javascript">
+              var disqus_config = function () {
+              this.page.url = 'https:\/\/youta1119.github.io\/post\/2018\/12\/24\/why-dose-kotlin-native-working';
+            };
+
+          </script>
+          </div>
+          
+        
+        
+      
+
+    </div>
+  </div>
+</div>
+
+    <footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <ul class="list-inline text-center footer-links">
+          
+              <li>
+                <a href="mailto:dev.youta1119@gmail.com" title="Email me">
+                  <span class="fa-stack fa-lg">
+                    <i class="fas fa-circle fa-stack-2x"></i>
+                    <i class="fas fa-envelope fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a href="https://github.com/youta1119" title="GitHub">
+                  <span class="fa-stack fa-lg">
+                    <i class="fas fa-circle fa-stack-2x"></i>
+                    <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a href="https://twitter.com/youta1119" title="Twitter">
+                  <span class="fa-stack fa-lg">
+                    <i class="fas fa-circle fa-stack-2x"></i>
+                    <i class="fab fa-twitter fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          
+          <li>
+            
+            <a href="https://youta1119.github.io/index.xml" title="RSS">
+            
+              <span class="fa-stack fa-lg">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="fas fa-rss fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+        </ul>
+        <p class="credits copyright text-muted">
+          
+            
+              yota ogino
+            
+          
+
+          &nbsp;&bull;&nbsp;&copy;
+          
+            2018
+          
+
+          
+            &nbsp;&bull;&nbsp;
+            <a href="https://youta1119.github.io">youta1119&#39;s blog</a>
+          
+        </p>
+        
+        <p class="credits theme-by text-muted">
+          <a href="http://gohugo.io">Hugo v0.52</a> powered &nbsp;&bull;&nbsp; Theme by <a href="http://deanattali.com/beautiful-jekyll/">Beautiful Jekyll</a> adapted to <a href="https://github.com/halogenica/beautifulhugo">Beautiful Hugo</a>
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="https://youta1119.github.io/js/main.js"></script>
+<script src="https://youta1119.github.io/js/highlight.min.js"></script>
+<script> hljs.initHighlightingOnLoad(); </script>
+<script> $(document).ready(function() {$("pre.chroma").css("padding","0");}); </script><script> renderMathInElement(document.body); </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.js" integrity="sha384-QELNnmcmU8IR9ZAykt67vGr9/rZJdHbiWi64V88fCPaOohUlHCqUD/unNN0BXSqy" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe-ui-default.min.js" integrity="sha384-m67o7SkQ1ALzKZIFh4CiTA8tmadaujiTa9Vu+nqPSwDOqHrDmxLezTdFln8077+q" crossorigin="anonymous"></script>
+<script src="https://youta1119.github.io/js/load-photoswipe.js"></script>
+
+
+
+
+
+
+
+<script type="text/javascript">
+$(function(){
+  $('#show-comments').on('click', function(){
+    var disqus_shortname = 'youta1119-github';
+      
+    (function() {
+      var disqus = document.createElement('script'); 
+      disqus.type = 'text/javascript'; 
+      disqus.async = true;
+      disqus.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(disqus);
+    })();
+      
+    $(this).hide(); 
+    });
+  });
+      
+</script>
+<script id="dsq-count-scr" src="//youta1119-github.disqus.com/count.js" async></script>
+
+
+
+
+  </body>
+</html>
+

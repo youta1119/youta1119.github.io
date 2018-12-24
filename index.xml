@@ -7,10 +7,23 @@
     <generator>Hugo -- gohugo.io</generator>
     <managingEditor>dev.youta1119@gmail.com (yota ogino)</managingEditor>
     <webMaster>dev.youta1119@gmail.com (yota ogino)</webMaster>
-    <lastBuildDate>Sun, 23 Dec 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 24 Dec 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://youta1119.github.io/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Kotlin/Nativeの標準ライブラリの実装について</title>
+      <link>https://youta1119.github.io/post/2018/12/24/why-dose-kotlin-native-working/</link>
+      <pubDate>Mon, 24 Dec 2018 00:00:00 +0000</pubDate>
+      <author>dev.youta1119@gmail.com (yota ogino)</author>
+      <guid>https://youta1119.github.io/post/2018/12/24/why-dose-kotlin-native-working/</guid>
+      <description>&lt;h2 id=&#34;はじめに&#34;&gt;はじめに&lt;/h2&gt;
+
+&lt;p&gt;この記事は&lt;a href=&#34;https://qiita.com/advent-calendar/2018/kotlin&#34;&gt;Kotlinアドベントカレンダー&lt;/a&gt;24日目の記事です。
+Advent Calendarに空きがあったので投稿することにしました。
+この記事ではKotlin/Nativeの標準ライブラリの実装について解説します。&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>xv6のブートローダーをrustで書き直す</title>

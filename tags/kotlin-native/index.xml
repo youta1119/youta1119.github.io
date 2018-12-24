@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Posts on youta1119&#39;s blog</title>
-    <link>https://youta1119.github.io/post/</link>
-    <description>Recent content in Posts on youta1119&#39;s blog</description>
+    <title>Kotlin Native on youta1119&#39;s blog</title>
+    <link>https://youta1119.github.io/tags/kotlin-native/</link>
+    <description>Recent content in Kotlin Native on youta1119&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <managingEditor>dev.youta1119@gmail.com (yota ogino)</managingEditor>
     <webMaster>dev.youta1119@gmail.com (yota ogino)</webMaster>
     <lastBuildDate>Mon, 24 Dec 2018 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://youta1119.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://youta1119.github.io/tags/kotlin-native/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -23,19 +23,6 @@
 &lt;p&gt;この記事は&lt;a href=&#34;https://qiita.com/advent-calendar/2018/kotlin&#34;&gt;Kotlinアドベントカレンダー&lt;/a&gt;24日目の記事です。
 Advent Calendarに空きがあったので投稿することにしました。
 この記事ではKotlin/Nativeの標準ライブラリの実装について解説します。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>xv6のブートローダーをrustで書き直す</title>
-      <link>https://youta1119.github.io/post/2018/12/23/xv6-bootloader-written-by-rust/</link>
-      <pubDate>Sun, 23 Dec 2018 00:00:00 +0000</pubDate>
-      <author>dev.youta1119@gmail.com (yota ogino)</author>
-      <guid>https://youta1119.github.io/post/2018/12/23/xv6-bootloader-written-by-rust/</guid>
-      <description>&lt;h2 id=&#34;はじめに&#34;&gt;はじめに&lt;/h2&gt;
-
-&lt;p&gt;大遅刻してすみません。
-この記事は&lt;a href=&#34;https://adventar.org/calendars/2915&#34;&gt;自作OSアドベントカレンダー&lt;/a&gt;９日目の記事です。
-ここ半年ぐらいxv6をrustで書き直すことに挑戦しているので、その話を書きます。この記事ではxv6のブートローダーの書き換えについて詳しく書きます。&lt;/p&gt;</description>
     </item>
     
   </channel>
