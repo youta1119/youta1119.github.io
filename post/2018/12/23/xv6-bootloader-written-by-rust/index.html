@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+  <head>
+    
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <title>xv6のブートローダーをrustで書き直す - youta1119&#39;s blog</title>
+  <meta property="og:title" content="xv6のブートローダーをrustで書き直す" />
+  <meta name="twitter:title" content="xv6のブートローダーをrustで書き直す" />
+  <meta name="description" content="はじめに
+
+大遅刻してすみません。
+この記事は自作OSアドベントカレンダー９日目の記事です。
+ここ半年ぐらいxv6をrustで書き直すことに挑戦しているので、その話を書きます。この記事ではxv6のブートローダーの書き換えについて詳しく書きます。">
+  <meta property="og:description" content="はじめに
+
+大遅刻してすみません。
+この記事は自作OSアドベントカレンダー９日目の記事です。
+ここ半年ぐらいxv6をrustで書き直すことに挑戦しているので、その話を書きます。この記事ではxv6のブートローダーの書き換えについて詳しく書きます。">
+  <meta name="twitter:description" content="はじめに
+
+大遅刻してすみません。
+この記事は自作OSアドベントカレンダー９日目の記事です。
+ここ半年ぐらいxv6をrustで書き直すことに挑戦しているので、その話を書きます。この記事ではxv6のブートローダーの書き換えについて詳しく書きます。">
+  <meta name="author" content="yota ogino"/><script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "WebSite",
+    "name": "youta1119&#39;s blog",
+    
+    "url": "https://youta1119.github.io"
+}
+</script><script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Organization",
+  "name": "",
+  "url": "https://youta1119.github.io"
+  
+  
+  
+  
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [{
+        "@type": "ListItem",
+        "position": 1,
+        "item": {
+          "@id": "https://youta1119.github.io",
+          "name": "home"
+        }
+    },{
+        "@type": "ListItem",
+        "position": 3,
+        "item": {
+          "@id": "https://youta1119.github.io/post/2018/12/23/xv6-bootloader-written-by-rust/",
+          "name": "Xv6のブートローダーをrustで書き直す"
+        }
+    }]
+}
+</script><script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Article",
+  "author": {
+    "name" : "yota ogino"
+  },
+  "headline": "xv6のブートローダーをrustで書き直す",
+  "description" : "はじめに 大遅刻してすみません。 この記事は自作OSアドベントカレンダー９日目の記事です。 ここ半年ぐらいxv6をrustで書き直すことに挑戦しているので、その話を書きます。この記事ではxv6のブートローダーの書き換えについて詳しく書きます。
+",
+  "inLanguage" : "en",
+  "wordCount": 3167,
+  "datePublished" : "2018-12-23T00:00:00",
+  "dateModified" : "2018-12-23T00:00:00",
+  "image" : "https://youta1119.github.io/img/avatar.png",
+  "keywords" : [ "xv6-rs, rust, 自作OS" ],
+  "mainEntityOfPage" : "https://youta1119.github.io/post/2018/12/23/xv6-bootloader-written-by-rust/",
+  "publisher" : {
+    "@type": "Organization",
+    "name" : "https://youta1119.github.io",
+    "logo" : {
+        "@type" : "ImageObject",
+        "url" : "https://youta1119.github.io/img/avatar.png",
+        "height" :  60 ,
+        "width" :  60
+    }
+  }
+}
+</script>
+
+<meta property="og:title" content="xv6のブートローダーをrustで書き直す" />
+<meta property="og:description" content="はじめに
+
+大遅刻してすみません。
+この記事は自作OSアドベントカレンダー９日目の記事です。
+ここ半年ぐらいxv6をrustで書き直すことに挑戦しているので、その話を書きます。この記事ではxv6のブートローダーの書き換えについて詳しく書きます。">
+<meta property="og:image" content="https://youta1119.github.io/img/avatar.png" />
+<meta property="og:url" content="https://youta1119.github.io/post/2018/12/23/xv6-bootloader-written-by-rust/" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="youta1119&#39;s blog" />
+  <meta name="twitter:title" content="xv6のブートローダーをrustで書き直す" />
+  <meta name="twitter:description" content="はじめに
+
+大遅刻してすみません。
+この記事は自作OSアドベントカレンダー９日目の記事です。
+ここ半年ぐらいxv6をrustで書き直すことに挑戦しているので、その話を書きます。この記事ではxv6のブートローダーの書き換えについて詳しく書きます。">
+  <meta name="twitter:image" content="https://youta1119.github.io/img/avatar.png" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@youta1119" />
+  <meta name="twitter:creator" content="@youta1119" />
+  <link href='https://youta1119.github.io/img/favicon.ico' rel='icon' type='image/x-icon'/>
+  <meta property="og:image" content="https://youta1119.github.io/img/avatar.png" />
+  <meta name="twitter:image" content="https://youta1119.github.io/img/avatar.png" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@youta1119" />
+  <meta name="twitter:creator" content="@youta1119" />
+  <meta property="og:url" content="https://youta1119.github.io/post/2018/12/23/xv6-bootloader-written-by-rust/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="youta1119&#39;s blog" />
+
+  <meta name="generator" content="Hugo 0.52" />
+  <link rel="alternate" href="https://youta1119.github.io/index.xml" type="application/rss+xml" title="youta1119&#39;s blog">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://youta1119.github.io/css/main.css" /><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" />
+  <link rel="stylesheet" href="https://youta1119.github.io/css/highlight.min.css" /><link rel="stylesheet" href="https://youta1119.github.io/css/codeblock.css" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.css" integrity="sha384-h/L2W9KefUClHWaty3SLE5F/qvc4djlyR4qY3NUV5HGQBBW7stbcfff1+I/vmsHh" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/default-skin/default-skin.min.css" integrity="sha384-iD0dNku6PYSIQLyfTOpB06F2KCZJAKLOThS5HRe8b3ibhdEQ6eKsFf/EeFxdOt5R" crossorigin="anonymous">
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-131292272-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+  </head>
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top navbar-custom">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="https://youta1119.github.io">youta1119&#39;s blog</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="main-navbar">
+      <ul class="nav navbar-nav navbar-right">
+        
+          
+            <li>
+              <a title="Blog" href="/">Blog</a>
+            </li>
+          
+        
+          
+            <li>
+              <a title="About" href="/page/about/">About</a>
+            </li>
+          
+        
+          
+            <li>
+              <a title="Tags" href="/tags">Tags</a>
+            </li>
+          
+        
+
+        
+
+        
+      </ul>
+    </div>
+
+    
+      <div class="avatar-container">
+        <div class="avatar-img-border">
+          <a title="youta1119&#39;s blog" href="https://youta1119.github.io">
+            <img class="avatar-img" src="https://youta1119.github.io/img/avatar.png" alt="youta1119&#39;s blog" />
+          </a>
+        </div>
+      </div>
+    
+
+  </div>
+</nav>
+
+
+
+
+    
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+
+  
+  
+  
+
+
+
+
+
+
+  
+
+  <header class="header-section ">
+    
+    <div class="intro-header no-img">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            <div class="post-heading">
+              
+                <h1>xv6のブートローダーをrustで書き直す</h1>
+              
+              
+              
+              
+                <span class="post-meta">
+  
+  
+  <i class="fas fa-calendar"></i>&nbsp;Posted on December 23, 2018
+  
+  
+    &nbsp;|&nbsp;<i class="fas fa-clock"></i>&nbsp;7&nbsp;minutes
+  
+  
+    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;3167&nbsp;words
+  
+  
+    &nbsp;|&nbsp;<i class="fas fa-user"></i>&nbsp;yota ogino
+  
+  
+</span>
+
+
+              
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+
+    
+<div class="container" role="main">
+  <div class="row">
+    <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+      <article role="main" class="blog-post">
+        <h2 id="はじめに">はじめに</h2>
+
+<p>大遅刻してすみません。
+この記事は<a href="https://adventar.org/calendars/2915">自作OSアドベントカレンダー</a>９日目の記事です。
+ここ半年ぐらいxv6をrustで書き直すことに挑戦しているので、その話を書きます。この記事ではxv6のブートローダーの書き換えについて詳しく書きます。</p>
+
+<p>まだ全然完成には程遠いですが成果物(以下xv6-rs)のリポジトリです。
+<a href="https://github.com/youta1119/xv6-rs">https://github.com/youta1119/xv6-rs</a></p>
+
+<p><center>
+<link rel="stylesheet" href="/css/hugo-easy-gallery.css" />
+<div class="box" >
+  <figure  itemprop="associatedMedia" itemscope itemtype="http://schema.org/ImageObject">
+    <div class="img">
+      <img itemprop="thumbnail" src="/img/2018-12-22/screenshot.png" alt="動作の様子"/>
+    </div>
+    <a href="/img/2018-12-22/screenshot.png" itemprop="contentUrl"></a>
+      <figcaption>
+          <p>動作の様子</p>
+      </figcaption>
+  </figure>
+</div>
+</center></p>
+
+<p>現在までの進捗はこんな感じになってます</p>
+
+<ul>
+<li>ブートローダー側はrustで書き換え完了</li>
+<li>カーネル側はuartによる標準出力まで実装</li>
+</ul>
+
+<h2 id="なぜvx6">なぜvx6?</h2>
+
+<p>今年の3月ごろにOSの勉強したいと思って、30日自作OS本を買いました。
+しかし、ツールチェインが著者の自作したものだったり、僕の環境(mac os)で動かすのが大変だったりといろいろ思うところがあって3日目くらいでやめました。</p>
+
+<p>それからしばらくしたある日、<a href="https://turingcomplete.fm/">Turing Complete FM</a>を聞いていたらxv6の話でてきたので、xv6とはなんぞやと調べてみると、MITが開発した教育用のOSであること、講義資料が公開されていることを知りました。
+xv6は、はりぼてOSと比較して、現代の汎用OSに必要な機能が最低限そろっていること、unix環境で開発できるのことが良いと思いました。
+そこでxv6の講義資料を使ってOSの勉強を始めることにしました。</p>
+
+<h2 id="なぜrust">なぜrust?</h2>
+
+<p>おそらく講義時間の都合だと思いますが、xv6の講義では、ほとんど完成してあるOSに不足した機能を、穴埋め形式でを足していく形になってます。
+しかし、これは、30日自作OS本のように最初から手を動かしてOSを作ってみたかった僕には不満がありました。
+なので、別の言語で最初から書き直してしまえばいいのではないかrustで書き直すことにしました。
+rustを選んだのは、並行性、安全性を言語仕様として保証してくれる点がOS開発の際に役立ちそうだと思ったからです。</p>
+
+<h2 id="ブートローダーの実装">ブートローダーの実装</h2>
+
+<h3 id="開発環境">開発環境</h3>
+
+<ul>
+<li>ubuntu 18.04.1 LTS</li>
+<li>rustc 1.32.0-nightly</li>
+<li>xargo 0.3.12</li>
+</ul>
+
+<p>開発環境はこのようになっています。
+nightly版のrustを使用し、xargoというツールを使ってビルドします。
+<a href="https://github.com/japaric/xargo">xargo</a>はカスタムターゲット向けのsysrootのビルドして、rustのプロジェクトをビルドする際にsysrootをいい感じに切り替えてくれるツールです。
+またrustの標準ライブラリは使わず、OSに依存しないポータブルなコアライブラリを使用しています。</p>
+
+<h3 id="カスタムターゲットの設定">カスタムターゲットの設定</h3>
+
+<p>自作OSに適したコンパイルのターゲットはrustcでサポートされていないため、カスタムターゲットを作成します。
+rustではターケット仕様ファイルを定義することでカスタムターゲットを作成できます。
+ターケット仕様ファイルはjson形式で作成します。</p>
+
+<p>この辺を参考にコピペして、以下のようなターケット仕様ファイルは作成しました。
+多分いらない項目もあると思いますが、動いているので気にしないことにします。</p>
+
+<ul>
+<li><a href="https://github.com/rust-lang/rust/tree/master/src/librustc_target/spec">https://github.com/rust-lang/rust/tree/master/src/librustc_target/spec</a></li>
+<li><a href="https://os.phil-opp.com/set-up-rust/">https://os.phil-opp.com/set-up-rust/</a></li>
+</ul>
+<div class="highlight"><pre class="chroma"><code class="language-json" data-lang="json"><span class="p">{</span>
+    <span class="nt">&#34;llvm-target&#34;</span><span class="p">:</span> <span class="s2">&#34;i386-unknown-none&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;target-endian&#34;</span><span class="p">:</span> <span class="s2">&#34;little&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;target-c-int-width&#34;</span><span class="p">:</span> <span class="s2">&#34;32&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;target-pointer-width&#34;</span><span class="p">:</span> <span class="s2">&#34;32&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;max-atomic-width&#34;</span><span class="p">:</span> <span class="s2">&#34;64&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;data-layout&#34;</span><span class="p">:</span> <span class="s2">&#34;e-m:e-i32:32-f32:32-n8:16:32-S128-p:32:32:32&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;arch&#34;</span><span class="p">:</span> <span class="s2">&#34;x86&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;cpu&#34;</span><span class="p">:</span> <span class="s2">&#34;pentium4&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;os&#34;</span><span class="p">:</span> <span class="s2">&#34;none&#34;</span><span class="p">,</span> <span class="err">//</span> <span class="err">osなし</span>
+    <span class="nt">&#34;linker-flavor&#34;</span><span class="p">:</span> <span class="s2">&#34;ld.lld&#34;</span><span class="p">,</span>
+    <span class="nt">&#34;linker&#34;</span><span class="p">:</span> <span class="s2">&#34;rust-lld&#34;</span><span class="p">,</span> <span class="err">//rust内臓のlldでリンクする</span>
+    <span class="nt">&#34;pre-link-args&#34;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&#34;ld.lld&#34;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="s2">&#34;--script=linker.ld&#34;</span>
+        <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="nt">&#34;features&#34;</span><span class="p">:</span> <span class="s2">&#34;-mmx,-sse,+soft-float&#34;</span><span class="p">,</span> <span class="err">//smid命令を無効化(割り込み時のスタック退避がパフォーマンスを低下させるため)</span>
+    <span class="nt">&#34;dynamic-linking&#34;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="nt">&#34;has-rpath&#34;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="nt">&#34;no-default-libraries&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nt">&#34;has-elf-tls&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nt">&#34;eliminate-frame-pointer&#34;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="nt">&#34;no-compiler-rt&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nt">&#34;disable-redzone&#34;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span> <span class="err">//レッドソーンを無効化(よくわかってない)</span>
+    <span class="nt">&#34;panic-strategy&#34;</span><span class="p">:</span> <span class="s2">&#34;abort&#34;</span><span class="p">,</span>　<span class="err">//パニックを起きたときにabortするようにする</span>
+    <span class="nt">&#34;executables&#34;</span><span class="p">:</span> <span class="kc">true</span>
+<span class="p">}</span></code></pre></div>
+<h3 id="実装について">実装について</h3>
+
+<p>rustでブートローダーを作るには私の知る限り２つの方法があります。</p>
+
+<ul>
+<li>1つ目は、ブートローダーのアセンブリとコードを別々にコンパイル方法です。この方法ではアセンブリはgccで、コードはrustで静的ライブラリとしてコンパイルします。そして生成されたオブジェクトファイルをリンカで結合することでブートローダを作成します。</li>
+<li>2つ目は、rustの自由形式のアセンブリ(global_asm)をつかって rustのコンパイラで一緒にコンパイルする方法です。</li>
+</ul>
+
+<p>rustでOSを作る以上できるだけrustの機能を使いたい気持ちがあったので2つ目の方法を選びました。</p>
+
+<h4 id="ブートローダー-アセンブリ側">ブートローダー(アセンブリ側)</h4>
+
+<p>自由形式のアセンブリはLLVMのモジュールレベルのインラインアセンブリに変換されるようで、おそらくllvmの組み込みアセンブラで処理されるのだと思います。
+試してみた感じgasと構文で、gasのマクロやディレクティブが使えました</p>
+
+<p>ほとんどvx6のブートローダーのアセンブリ(boot.S)をコピペしたものですが、アセンブラがgccからllvmの組み込みアセンブラに変わったため、<code>#define</code>マクロが使えなくなってしまったので、その部分はアセンブリのマクロで書き直しました。</p>
+<div class="highlight"><pre class="chroma"><code class="language-assembly" data-lang="assembly"># Start the CPU: switch to 32-bit protected mode, jump into C.
+# The BIOS loads this code from the first sector of the hard disk into
+# memory at physical address 0x7c00 and starts executing in real mode
+# with %cs=0 %ip=7c00.
+
+.set PROT_MODE_CSEG, 0x8         # kernel code segment selector
+.set PROT_MODE_DSEG, 0x10        # kernel data segment selector
+.set CR0_PE_ON,      0x1         # protected mode enable flag
+.set STA_X, 0x8 // Executable segment
+.set STA_R, 0x2 // Readable (executable segments)
+.set STA_W, 0x2 // Writeable (non-executable segments)
+
+# defineマクロが使えなくなってしまったので書き換えた
+.macro SEG_NULL
+  .word 0, 0
+	.byte 0, 0, 0, 0
+.endm  
+
+.macro SEG type, base, lim
+	.word ((\lim &gt;&gt; 12) &amp; 0xffff), (\base &amp; 0xffff)
+	.byte ((\base &gt;&gt; 16) &amp; 0xff), (0x90 | \type),	(0xC0 | ((\lim &gt;&gt; 28) &amp; 0xf)), ((\base &gt;&gt; 24) &amp; 0xff)
+.endm
+
+.code16                     # Assemble for 16-bit mode
+.globl start
+
+start:
+  cli                         # Disable interrupts
+  cld                         # String operations increment
+  # Set up the important data segment registers (DS, ES, SS).
+  xorw    %ax,%ax             # Segment number zero
+  movw    %ax,%ds             # -&gt; Data Segment
+  movw    %ax,%es             # -&gt; Extra Segment
+  movw    %ax,%ss             # -&gt; Stack Segment
+
+# A20ゲートの有効化
+# ref:http://caspar.hazymoon.jp/OpenBSD/annex/gate_a20.html
+  # Enable A20:
+  #   For backwards compatibility with the earliest PCs, physical
+  #   address line 20 is tied low, so that addresses higher than
+  #   1MB wrap around to zero by default.  This code undoes this.
+seta20.1:
+  inb     $0x64,%al               # Wait for not busy
+  testb   $0x2,%al
+  jnz     seta20.1
+
+  movb    $0xd1,%al               # 0xd1 -&gt; port 0x64
+  outb    %al,$0x64
+
+seta20.2:
+  inb     $0x64,%al               # Wait for not busy
+  testb   $0x2,%al
+  jnz     seta20.2
+
+  movb    $0xdf,%al               # 0xdf -&gt; port 0x60
+  outb    %al,$0x60
+
+  # Switch from real to protected mode, using a bootstrap GDT
+  # and segment translation that makes virtual addresses 
+  # identical to their physical addresses, so that the 
+  # effective memory map does not change during the switch.
+  # GDTの設定
+  lgdt    gdtdesc
+  movl    %cr0, %eax
+  orl     $CR0_PE_ON, %eax
+  movl    %eax, %cr0
+  
+  # Jump to next instruction, but in 32-bit code segment.
+  # Switches processor into 32-bit mode.
+  # 32bitモードに移行
+  ljmp    $PROT_MODE_CSEG, $protcseg
+
+.code32                     # Assemble for 32-bit mode
+protcseg:
+  # Set up the protected-mode data segment registers
+  # 各レジスタ初期化
+  movw    $PROT_MODE_DSEG, %ax    # Our data segment selector
+  movw    %ax, %ds                # -&gt; DS: Data Segment
+  movw    %ax, %es                # -&gt; ES: Extra Segment
+  movw    %ax, %ss                # -&gt; SS: Stack Segment
+  movw    %ax, %fs                # -&gt; FS
+  movw    %ax, %gs                # -&gt; GS
+  
+  
+  # Set up the stack pointer and call into C.
+  # スタックポインタを設定してるっぽい(よくわかってない)
+  movl $start, %esp
+  call bootmain #rustの関数呼び出し
+
+  # If bootmain returns (it shouldn&#39;t), loop.
+spin:
+  hlt
+  jmp spin
+
+# Bootstrap GDT
+#.p2align 2                                # force 4 byte alignment
+gdt:
+  SEG_NULL				# null seg
+  SEG STA_X|STA_R, 0x0, 0xffffffff	# code seg
+  SEG STA_W, 0x0, 0xffffffff	        # data seg
+
+gdtdesc:
+  .word   0x17                            # sizeof(gdt) - 1
+  .long   gdt                             # address gdt</code></pre></div>
+<h4 id="ブートローダー-rust側">ブートローダー(rust側)</h4>
+
+<p>xv6の<code>main.c</code>をほぼそのままrustに移植しただけです。
+僕はポインタが苦手ですが、変なことしようとするとrustコンパイラがしっかり怒ってくれたので、特にハマったりしませんでした。</p>
+<div class="highlight"><pre class="chroma"><code class="language-rust" data-lang="rust"><span class="cp">#![no_std]</span><span class="w"> </span><span class="c1">//標準ライブラリをつかわない
+</span><span class="c1"></span><span class="cp">#![no_main]</span><span class="w">
+</span><span class="w"></span><span class="cp">#![feature(lang_items)]</span><span class="w">
+</span><span class="w"></span><span class="cp">#![feature(global_asm)]</span><span class="w">
+</span><span class="w"></span><span class="cp">#![feature(asm)]</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="k">extern</span><span class="w"> </span><span class="k">crate</span><span class="w"> </span><span class="n">x86</span><span class="p">;</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="k">mod</span> <span class="nn">elf</span><span class="p">;</span><span class="w">
+</span><span class="w"></span><span class="k">use</span><span class="w"> </span><span class="n">elf</span>::<span class="p">{</span><span class="n">ElfHeader</span><span class="p">,</span><span class="w"> </span><span class="n">ProgramHeader</span><span class="p">,</span><span class="w"> </span><span class="n">ELF_MAGIC</span><span class="p">};</span><span class="w">
+</span><span class="w"></span><span class="k">use</span><span class="w"> </span><span class="n">x86</span>::<span class="n">instruction</span>::<span class="p">{</span><span class="n">inb</span><span class="p">,</span><span class="w"> </span><span class="n">insl</span><span class="p">,</span><span class="w"> </span><span class="n">outb</span><span class="p">};</span><span class="w">
+</span><span class="w"></span><span class="k">use</span><span class="w"> </span><span class="n">core</span>::<span class="n">panic</span>::<span class="n">PanicInfo</span><span class="p">;</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="c1">// boot.Sの内容を文字列として読み込んで,　自由形式のアセンブリとしてコンパイラに解釈させる
+</span><span class="c1"></span><span class="n">global_asm</span><span class="o">!</span><span class="p">(</span><span class="n">include_str</span><span class="o">!</span><span class="p">(</span><span class="s">&#34;boot.S&#34;</span><span class="p">));</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="k">const</span><span class="w"> </span><span class="n">SECTOR_SIZE</span>: <span class="kt">u32</span> <span class="o">=</span><span class="w"> </span><span class="mi">512</span><span class="p">;</span><span class="w">
+</span><span class="w"></span><span class="cp">#[no_mangle]</span><span class="w">
+</span><span class="w"></span><span class="k">pub</span><span class="w"> </span><span class="k">unsafe</span><span class="w"> </span><span class="k">extern</span><span class="w"> </span><span class="s">&#34;C&#34;</span><span class="w"> </span><span class="k">fn</span> <span class="nf">bootmain</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">elf_header</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x10000</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="o">*</span><span class="k">const</span><span class="w"> </span><span class="n">ElfHeader</span><span class="p">;</span><span class="c1">// scratch space
+</span><span class="c1"></span><span class="w">    </span><span class="n">read_segment</span><span class="p">(</span><span class="n">elf_header</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="kt">u32</span><span class="p">,</span><span class="w"> </span><span class="n">SECTOR_SIZE</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w">
+</span><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">elf_header</span><span class="p">).</span><span class="n">magic</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">ELF_MAGIC</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span><span class="w">        </span><span class="c1">//outw(0x8A00, 0x8A00);
+</span><span class="c1"></span><span class="w">        </span><span class="c1">//outw(0x8A00, 0x8E00);
+</span><span class="c1"></span><span class="w">        </span><span class="k">return</span><span class="p">;</span><span class="w">
+</span><span class="w">    </span><span class="p">}</span><span class="w">
+</span><span class="w">    </span><span class="c1">// load each program segment (ignores ph flags)
+</span><span class="c1"></span><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">ph</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">((</span><span class="n">elf_header</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="o">*</span><span class="k">const</span><span class="w"> </span><span class="kt">u8</span><span class="p">).</span><span class="n">offset</span><span class="p">((</span><span class="o">*</span><span class="n">elf_header</span><span class="p">).</span><span class="n">phoff</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="kt">isize</span><span class="p">))</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="o">*</span><span class="k">const</span><span class="w"> </span><span class="n">ProgramHeader</span><span class="p">;</span><span class="w">
+</span><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">eph</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ph</span><span class="p">.</span><span class="n">offset</span><span class="p">((</span><span class="o">*</span><span class="n">elf_header</span><span class="p">).</span><span class="n">phnum</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="kt">isize</span><span class="p">);</span><span class="w">
+</span><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="n">ph</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">eph</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span><span class="w">        </span><span class="n">read_segment</span><span class="p">((</span><span class="o">*</span><span class="n">ph</span><span class="p">).</span><span class="n">paddr</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">ph</span><span class="p">).</span><span class="n">memsz</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">ph</span><span class="p">).</span><span class="n">off</span><span class="p">);</span><span class="w">
+</span><span class="w">        </span><span class="n">ph</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">((</span><span class="n">ph</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="kt">u32</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">32</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="o">*</span><span class="k">const</span><span class="w"> </span><span class="n">ProgramHeader</span><span class="p">;</span><span class="w"> </span><span class="c1">//ph.offset(1);
+</span><span class="c1"></span><span class="w">    </span><span class="p">}</span><span class="w">
+</span><span class="w">    </span><span class="c1">// call the entry point from the ELF header
+</span><span class="c1"></span><span class="w">    </span><span class="c1">// note: does not return!
+</span><span class="c1"></span><span class="w">    </span><span class="c1">// カーネルを呼び出す。
+</span><span class="c1"></span><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">entry</span>: <span class="nc">extern</span><span class="w"> </span><span class="s">&#34;C&#34;</span><span class="w"> </span><span class="k">fn</span><span class="p">()</span><span class="w"> </span>-&gt; <span class="o">!</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">core</span>::<span class="n">mem</span>::<span class="n">transmute</span><span class="p">((</span><span class="o">*</span><span class="n">elf_header</span><span class="p">).</span><span class="n">entry</span><span class="p">);</span><span class="w">
+</span><span class="w">    </span><span class="n">entry</span><span class="p">();</span><span class="w">
+</span><span class="w"></span><span class="p">}</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="c1">// Read &#39;count&#39; bytes at &#39;offset&#39; from kernel into physical address &#39;pa&#39;.
+</span><span class="c1">// Might copy more than asked
+</span><span class="c1">// コンパイラにインライン展開されると510バイト制限を超えてしまうので、インライン展開させないようにする。
+</span><span class="c1"></span><span class="cp">#[inline(never)]</span><span class="w">
+</span><span class="w"></span><span class="k">unsafe</span><span class="w"> </span><span class="k">fn</span> <span class="nf">read_segment</span><span class="p">(</span><span class="n">pa</span>: <span class="kt">u32</span><span class="p">,</span><span class="w"> </span><span class="n">count</span>: <span class="kt">u32</span><span class="p">,</span><span class="w"> </span><span class="n">offset</span>: <span class="kt">u32</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="n">epa</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pa</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">count</span><span class="p">;</span><span class="w">
+</span><span class="w">    </span><span class="c1">// round down to sector boundary
+</span><span class="c1"></span><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">bpa</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pa</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="o">!</span><span class="p">(</span><span class="n">SECTOR_SIZE</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w">
+</span><span class="w">
+</span><span class="w">    </span><span class="c1">// translate from bytes to sectors, and kernel starts at sector 1
+</span><span class="c1"></span><span class="w">    </span><span class="kd">let</span><span class="w"> </span><span class="k">mut</span><span class="w"> </span><span class="n">offset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">offset</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">SECTOR_SIZE</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">
+</span><span class="w">    </span><span class="c1">// If this is too slow, we could read lots of sectors at a time.
+</span><span class="c1"></span><span class="w">    </span><span class="c1">// We&#39;d write more to memory than asked, but it doesn&#39;t matter --
+</span><span class="c1"></span><span class="w">    </span><span class="c1">// we load in increasing order.
+</span><span class="c1"></span><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="n">bpa</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">epa</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span><span class="w">        </span><span class="c1">// Since we haven&#39;t enabled paging yet and we&#39;re using
+</span><span class="c1"></span><span class="w">        </span><span class="c1">// an identity segment mapping (see boot.S), we can
+</span><span class="c1"></span><span class="w">        </span><span class="c1">// use physical addresses directly.  This won&#39;t be the
+</span><span class="c1"></span><span class="w">        </span><span class="c1">// case once JOS enables the MMU.
+</span><span class="c1"></span><span class="w">        </span><span class="n">read_sector</span><span class="p">(</span><span class="n">bpa</span><span class="w"> </span><span class="p">,</span><span class="w"> </span><span class="n">offset</span><span class="p">);</span><span class="w">
+</span><span class="w">        </span><span class="n">offset</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">
+</span><span class="w">        </span><span class="n">bpa</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">SECTOR_SIZE</span><span class="p">;</span><span class="w">
+</span><span class="w">    </span><span class="p">}</span><span class="w">
+</span><span class="w"></span><span class="p">}</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="k">unsafe</span><span class="w"> </span><span class="k">fn</span> <span class="nf">wait_disk</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span><span class="w">    </span><span class="c1">// wait for disk reaady
+</span><span class="c1"></span><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">inb</span><span class="p">(</span><span class="mh">0x1F7</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0xC0</span><span class="p">)</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mh">0x40</span><span class="w"> </span><span class="p">{};</span><span class="w">
+</span><span class="w"></span><span class="p">}</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="k">unsafe</span><span class="w"> </span><span class="k">fn</span> <span class="nf">read_sector</span><span class="p">(</span><span class="n">dst</span>: <span class="kt">u32</span><span class="p">,</span><span class="w"> </span><span class="n">offset</span>: <span class="kt">u32</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span><span class="w">    </span><span class="c1">// wait for disk to be ready
+</span><span class="c1"></span><span class="w">    </span><span class="n">wait_disk</span><span class="p">();</span><span class="w">
+</span><span class="w">    </span><span class="n">outb</span><span class="p">(</span><span class="mh">0x1F2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span><span class="w"> </span><span class="c1">// count = 1
+</span><span class="c1"></span><span class="w">    </span><span class="n">outb</span><span class="p">(</span><span class="mh">0x1F3</span><span class="p">,</span><span class="w"> </span><span class="n">offset</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="kt">u8</span><span class="p">);</span><span class="w">
+</span><span class="w">    </span><span class="n">outb</span><span class="p">(</span><span class="mh">0x1F4</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="n">offset</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">8</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="kt">u8</span><span class="p">);</span><span class="w">
+</span><span class="w">    </span><span class="n">outb</span><span class="p">(</span><span class="mh">0x1F5</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="n">offset</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">16</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="kt">u8</span><span class="p">);</span><span class="w">
+</span><span class="w">    </span><span class="n">outb</span><span class="p">(</span><span class="mh">0x1F6</span><span class="p">,</span><span class="w"> </span><span class="p">((</span><span class="n">offset</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">24</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="mh">0xE0</span><span class="p">)</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="kt">u8</span><span class="p">);</span><span class="w">
+</span><span class="w">    </span><span class="n">outb</span><span class="p">(</span><span class="mh">0x1F7</span><span class="p">,</span><span class="w"> </span><span class="mh">0x20</span><span class="p">);</span><span class="w"> </span><span class="c1">// cmd 0x20 - read sectors
+</span><span class="c1"></span><span class="w">    </span><span class="c1">// wait for disk to be ready
+</span><span class="c1"></span><span class="w">    </span><span class="n">wait_disk</span><span class="p">();</span><span class="w">
+</span><span class="w">    </span><span class="c1">// read a sector
+</span><span class="c1"></span><span class="w">    </span><span class="n">insl</span><span class="p">(</span><span class="mh">0x1F0</span><span class="p">,</span><span class="w"> </span><span class="n">dst</span><span class="p">,</span><span class="w"> </span><span class="n">SECTOR_SIZE</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">4</span><span class="p">);</span><span class="w">
+</span><span class="w"></span><span class="p">}</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="cp">#[panic_handler]</span><span class="w">
+</span><span class="w"></span><span class="cp">#[no_mangle]</span><span class="w">
+</span><span class="w"></span><span class="c1">// パニックが起きたときに呼ばれる
+</span><span class="c1">// ref: https://doc.rust-lang.org/nomicon/panic-handler.html
+</span><span class="c1"></span><span class="k">pub</span><span class="w"> </span><span class="k">extern</span><span class="w"> </span><span class="s">&#34;C&#34;</span><span class="w"> </span><span class="k">fn</span> <span class="nf">panic</span><span class="p">(</span><span class="n">_info</span>: <span class="kp">&amp;</span><span class="nc">PanicInfo</span><span class="p">)</span><span class="w"> </span>-&gt; <span class="o">!</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span><span class="w">    </span><span class="k">loop</span><span class="w"> </span><span class="p">{}</span><span class="w">
+</span><span class="w"></span><span class="p">}</span><span class="w">
+</span><span class="w">
+</span><span class="w"></span><span class="cp">#[lang = </span><span class="s">&#34;eh_personality&#34;</span><span class="cp">]</span><span class="w">
+</span><span class="w"></span><span class="cp">#[no_mangle]</span><span class="w">
+</span><span class="w"></span><span class="c1">//　おまじない(よくわかってない)
+</span><span class="c1">// https://doc.rust-lang.org/1.6.0/book/no-stdlib.html
+</span><span class="c1"></span><span class="k">pub</span><span class="w"> </span><span class="k">extern</span><span class="w"> </span><span class="s">&#34;C&#34;</span><span class="w"> </span><span class="k">fn</span> <span class="nf">eh_personality</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w">
+</span><span class="w">    </span><span class="k">loop</span><span class="w"> </span><span class="p">{}</span><span class="w">
+</span><span class="w"></span><span class="p">}</span><span class="w">
+</span><span class="w"></span></code></pre></div>
+<h4 id="リンカスクリプト">リンカスクリプト</h4>
+
+<p>リンカスクリプトでブートローダーのブートシグネチャの付与もやっています。
+開発当初ブートシグネチャをつけ忘れたため、ブートできなくてデバックに何時間も時間を溶かしました😇</p>
+<div class="highlight"><pre class="chroma">OUTPUT_FORMAT(&#34;elf32-i386&#34;, &#34;elf32-i386&#34;, &#34;elf32-i386&#34;)
+OUTPUT_ARCH(i386)
+ENTRY(start)
+IPLBASE = 0x7c00;
+
+SECTIONS {
+　　/* ブートローダは0x7c00に読み込まれるため、開始アドレスを0x7c00にする*/
+    . = IPLBASE;
+    .text : AT(IPLBASE) {
+      *(.text)
+      *(.data)
+      *(.bbs)
+    }
+    . = IPLBASE + 510;
+    /* 510バイト目に0xaa55を書き込む、これがないとブートローダーとして認識されない*/
+    .sign : {
+      SHORT(0xaa55)
+    }
+}</pre></div>
+<h2 id="今後の目標">今後の目標</h2>
+
+<p>とりあえず半年くらいかけてカーネルの部分を実装したいなと思っています。</p>
+
+        
+          <div class="blog-tags">
+            
+              <a href="https://youta1119.github.io/tags/xv6-rs/">xv6-rs</a>&nbsp;
+            
+              <a href="https://youta1119.github.io/tags/rust/">rust</a>&nbsp;
+            
+              <a href="https://youta1119.github.io/tags/%E8%87%AA%E4%BD%9Cos/">自作OS</a>&nbsp;
+            
+          </div>
+        
+
+        
+            <hr/>
+            <section id="social-share">
+              <div class="list-inline footer-links">
+                
+
+<div class="share-box" aria-hidden="true">
+    <ul class="share">
+      
+      <li>
+        <a href="//twitter.com/share?url=https%3a%2f%2fyouta1119.github.io%2fpost%2f2018%2f12%2f23%2fxv6-bootloader-written-by-rust%2f&amp;text=xv6%e3%81%ae%e3%83%96%e3%83%bc%e3%83%88%e3%83%ad%e3%83%bc%e3%83%80%e3%83%bc%e3%82%92rust%e3%81%a7%e6%9b%b8%e3%81%8d%e7%9b%b4%e3%81%99&amp;via=youta1119" target="_blank" title="Share on Twitter">
+          <i class="fab fa-twitter"></i>
+        </a>
+      </li>
+  
+      
+      <li>
+        <a href="//plus.google.com/share?url=https%3a%2f%2fyouta1119.github.io%2fpost%2f2018%2f12%2f23%2fxv6-bootloader-written-by-rust%2f" target="_blank" title="Share on Google Plus">
+          <i class="fab fa-google-plus"></i>
+        </a>
+      </li>
+  
+      
+      <li>
+        <a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fyouta1119.github.io%2fpost%2f2018%2f12%2f23%2fxv6-bootloader-written-by-rust%2f" target="_blank" title="Share on Facebook">
+          <i class="fab fa-facebook"></i>
+        </a>
+      </li>
+  
+      
+      <li>
+        <a href="//reddit.com/submit?url=https%3a%2f%2fyouta1119.github.io%2fpost%2f2018%2f12%2f23%2fxv6-bootloader-written-by-rust%2f&amp;title=xv6%e3%81%ae%e3%83%96%e3%83%bc%e3%83%88%e3%83%ad%e3%83%bc%e3%83%80%e3%83%bc%e3%82%92rust%e3%81%a7%e6%9b%b8%e3%81%8d%e7%9b%b4%e3%81%99" target="_blank" title="Share on Reddit">
+          <i class="fab fa-reddit"></i>
+        </a>
+      </li>
+  
+      
+      <li>
+        <a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fyouta1119.github.io%2fpost%2f2018%2f12%2f23%2fxv6-bootloader-written-by-rust%2f&amp;title=xv6%e3%81%ae%e3%83%96%e3%83%bc%e3%83%88%e3%83%ad%e3%83%bc%e3%83%80%e3%83%bc%e3%82%92rust%e3%81%a7%e6%9b%b8%e3%81%8d%e7%9b%b4%e3%81%99" target="_blank" title="Share on LinkedIn">
+          <i class="fab fa-linkedin"></i>
+        </a>
+      </li>
+  
+      
+      <li>
+        <a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fyouta1119.github.io%2fpost%2f2018%2f12%2f23%2fxv6-bootloader-written-by-rust%2f&amp;title=xv6%e3%81%ae%e3%83%96%e3%83%bc%e3%83%88%e3%83%ad%e3%83%bc%e3%83%80%e3%83%bc%e3%82%92rust%e3%81%a7%e6%9b%b8%e3%81%8d%e7%9b%b4%e3%81%99" target="_blank" title="Share on StumbleUpon">
+          <i class="fab fa-stumbleupon"></i>
+        </a>
+      </li>
+  
+      
+      <li>
+        <a href="//www.pinterest.com/pin/create/button/?url=https%3a%2f%2fyouta1119.github.io%2fpost%2f2018%2f12%2f23%2fxv6-bootloader-written-by-rust%2f&amp;description=xv6%e3%81%ae%e3%83%96%e3%83%bc%e3%83%88%e3%83%ad%e3%83%bc%e3%83%80%e3%83%bc%e3%82%92rust%e3%81%a7%e6%9b%b8%e3%81%8d%e7%9b%b4%e3%81%99" target="_blank" title="Share on Pinterest">
+          <i class="fab fa-pinterest"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+  
+              </div>
+            </section>
+        
+
+        
+          
+          
+        
+      </article>
+
+      
+        <ul class="pager blog-pager">
+          
+          
+        </ul>
+      
+
+
+      
+        
+          
+          <div class="disqus-comments">                  
+            <button id="show-comments" class="btn btn-default" type="button">Show <span class="disqus-comment-count" data-disqus-url="https://youta1119.github.io/post/2018/12/23/xv6-bootloader-written-by-rust">comments</span></button>
+            <div id="disqus_thread"></div>
+
+            <script type="text/javascript">
+              var disqus_config = function () {
+              this.page.url = 'https:\/\/youta1119.github.io\/post\/2018\/12\/23\/xv6-bootloader-written-by-rust';
+            };
+
+          </script>
+          </div>
+          
+        
+        
+      
+
+    </div>
+  </div>
+</div>
+
+    <footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <ul class="list-inline text-center footer-links">
+          
+              <li>
+                <a href="mailto:dev.youta1119@gmail.com" title="Email me">
+                  <span class="fa-stack fa-lg">
+                    <i class="fas fa-circle fa-stack-2x"></i>
+                    <i class="fas fa-envelope fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a href="https://github.com/youta1119" title="GitHub">
+                  <span class="fa-stack fa-lg">
+                    <i class="fas fa-circle fa-stack-2x"></i>
+                    <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a href="https://twitter.com/youta1119" title="Twitter">
+                  <span class="fa-stack fa-lg">
+                    <i class="fas fa-circle fa-stack-2x"></i>
+                    <i class="fab fa-twitter fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          
+          <li>
+            
+            <a href="https://youta1119.github.io/index.xml" title="RSS">
+            
+              <span class="fa-stack fa-lg">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="fas fa-rss fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+        </ul>
+        <p class="credits copyright text-muted">
+          
+            
+              yota ogino
+            
+          
+
+          &nbsp;&bull;&nbsp;&copy;
+          
+            2018
+          
+
+          
+            &nbsp;&bull;&nbsp;
+            <a href="https://youta1119.github.io">youta1119&#39;s blog</a>
+          
+        </p>
+        
+        <p class="credits theme-by text-muted">
+          <a href="http://gohugo.io">Hugo v0.52</a> powered &nbsp;&bull;&nbsp; Theme by <a href="http://deanattali.com/beautiful-jekyll/">Beautiful Jekyll</a> adapted to <a href="https://github.com/halogenica/beautifulhugo">Beautiful Hugo</a>
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="https://youta1119.github.io/js/main.js"></script>
+<script src="https://youta1119.github.io/js/highlight.min.js"></script>
+<script> hljs.initHighlightingOnLoad(); </script>
+<script> $(document).ready(function() {$("pre.chroma").css("padding","0");}); </script><script> renderMathInElement(document.body); </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.js" integrity="sha384-QELNnmcmU8IR9ZAykt67vGr9/rZJdHbiWi64V88fCPaOohUlHCqUD/unNN0BXSqy" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe-ui-default.min.js" integrity="sha384-m67o7SkQ1ALzKZIFh4CiTA8tmadaujiTa9Vu+nqPSwDOqHrDmxLezTdFln8077+q" crossorigin="anonymous"></script>
+<script src="https://youta1119.github.io/js/load-photoswipe.js"></script>
+
+
+
+
+
+
+
+<script type="text/javascript">
+$(function(){
+  $('#show-comments').on('click', function(){
+    var disqus_shortname = 'youta1119-github';
+      
+    (function() {
+      var disqus = document.createElement('script'); 
+      disqus.type = 'text/javascript'; 
+      disqus.async = true;
+      disqus.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(disqus);
+    })();
+      
+    $(this).hide(); 
+    });
+  });
+      
+</script>
+<script id="dsq-count-scr" src="//youta1119-github.disqus.com/count.js" async></script>
+
+
+
+
+  </body>
+</html>
+

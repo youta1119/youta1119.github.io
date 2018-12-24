@@ -14,10 +14,10 @@
     
     <item>
       <title>xv6のブートローダーをrustで書き直す</title>
-      <link>https://youta1119.github.io/post/2018-12-22-xv6-bootloader-written-by-rust/</link>
+      <link>https://youta1119.github.io/post/2018/12/23/xv6-bootloader-written-by-rust/</link>
       <pubDate>Sun, 23 Dec 2018 00:00:00 +0000</pubDate>
       <author>dev.youta1119@gmail.com (yota ogino)</author>
-      <guid>https://youta1119.github.io/post/2018-12-22-xv6-bootloader-written-by-rust/</guid>
+      <guid>https://youta1119.github.io/post/2018/12/23/xv6-bootloader-written-by-rust/</guid>
       <description>&lt;h2 id=&#34;はじめに&#34;&gt;はじめに&lt;/h2&gt;
 
 &lt;p&gt;大遅刻してすみません。
