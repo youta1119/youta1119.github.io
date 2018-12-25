@@ -7,12 +7,12 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
-  <title>Overview of all pages with the tag #自作os - youta1119&#39;s blog</title>
-  <meta property="og:title" content="Overview of all pages with the tag #自作os" />
-  <meta name="twitter:title" content="Overview of all pages with the tag #自作os" />
-  <meta name="description" content="Overview of all pages with the tag #自作os, such as: xv6のブートローダーをrustで書き直す">
-  <meta property="og:description" content="Overview of all pages with the tag #自作os, such as: xv6のブートローダーをrustで書き直す">
-  <meta name="twitter:description" content="Overview of all pages with the tag #自作os, such as: xv6のブートローダーをrustで書き直す">
+  <title>Overview of all pages with the category #Kotlin - youta1119&#39;s blog</title>
+  <meta property="og:title" content="Overview of all pages with the category #Kotlin" />
+  <meta name="twitter:title" content="Overview of all pages with the category #Kotlin" />
+  <meta name="description" content="Overview of all pages with the category #Kotlin, such as: Kotlin/Nativeの標準ライブラリの実装について">
+  <meta property="og:description" content="Overview of all pages with the category #Kotlin, such as: Kotlin/Nativeの標準ライブラリの実装について">
+  <meta name="twitter:description" content="Overview of all pages with the category #Kotlin, such as: Kotlin/Nativeの標準ライブラリの実装について">
   <meta name="author" content="yota ogino"/><script type="application/ld+json">
 {
     "@context": "http://schema.org",
@@ -34,12 +34,12 @@
 }
 </script>
 
-<meta property="og:title" content="自作os" />
+<meta property="og:title" content="Kotlin" />
 <meta property="og:image" content="https://youta1119.github.io/img/avatar.png" />
-<meta property="og:url" content="https://youta1119.github.io/tags/%E8%87%AA%E4%BD%9Cos/" />
+<meta property="og:url" content="https://youta1119.github.io/categories/kotlin/" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="youta1119&#39;s blog" />
-  <meta name="twitter:title" content="自作os" />
+  <meta name="twitter:title" content="Kotlin" />
   <meta name="twitter:image" content="https://youta1119.github.io/img/avatar.png" />
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:site" content="@youta1119" />
@@ -50,7 +50,7 @@
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:site" content="@youta1119" />
   <meta name="twitter:creator" content="@youta1119" />
-  <meta property="og:url" content="https://youta1119.github.io/tags/%E8%87%AA%E4%BD%9Cos/" />
+  <meta property="og:url" content="https://youta1119.github.io/categories/kotlin/" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="youta1119&#39;s blog" />
 
@@ -102,13 +102,19 @@ if (!doNotTrack) {
         
           
             <li>
-              <a title="About" href="/page/about/">About</a>
+              <a title="Categories" href="/categories">Categories</a>
             </li>
           
         
           
             <li>
               <a title="Tags" href="/tags">Tags</a>
+            </li>
+          
+        
+          
+            <li>
+              <a title="About" href="/page/about/">About</a>
             </li>
           
         
@@ -200,9 +206,9 @@ if (!doNotTrack) {
       <div class="container">
         <div class="row">
           <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-            <div class="tags-heading">
+            <div class="categories-heading">
               
-                <h1>自作os</h1>
+                <h1>Kotlin</h1>
               
               
                 <hr class="small">
@@ -225,8 +231,8 @@ if (!doNotTrack) {
         <div class="posts-list">
           
             <article class="post-preview">
-              <a href="https://youta1119.github.io/post/2018/12/23/xv6-bootloader-written-by-rust/">
-                <h2 class="post-title">xv6のブートローダーをrustで書き直す</h2>
+              <a href="https://youta1119.github.io/post/2018/12/24/about-kotlin-native-stdlib/">
+                <h2 class="post-title">Kotlin/Nativeの標準ライブラリの実装について</h2>
 
                 
               </a>
@@ -235,13 +241,13 @@ if (!doNotTrack) {
                 <span class="post-meta">
   
   
-  <i class="fas fa-calendar"></i>&nbsp;Posted on December 23, 2018
+  <i class="fas fa-calendar"></i>&nbsp;Posted on December 24, 2018
   
   
-    &nbsp;|&nbsp;<i class="fas fa-clock"></i>&nbsp;7&nbsp;minutes
+    &nbsp;|&nbsp;<i class="fas fa-clock"></i>&nbsp;5&nbsp;minutes
   
   
-    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;3167&nbsp;words
+    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;2478&nbsp;words
   
   
     &nbsp;|&nbsp;<i class="fas fa-user"></i>&nbsp;yota ogino
@@ -255,21 +261,19 @@ if (!doNotTrack) {
                 
                   <h2 id="はじめに">はじめに</h2>
 
-<p>大遅刻してすみません。
-この記事は<a href="https://adventar.org/calendars/2915">自作OSアドベントカレンダー</a>９日目の記事です。
-ここ半年ぐらいxv6をrustで書き直すことに挑戦しているので、その話を書きます。この記事ではxv6のブートローダーの書き換えについて詳しく書きます。</p>
-                  <a href="https://youta1119.github.io/post/2018/12/23/xv6-bootloader-written-by-rust/" class="post-read-more">[Read More]</a>
+<p>この記事は<a href="https://qiita.com/advent-calendar/2018/kotlin">Kotlinアドベントカレンダー</a>24日目の記事です。
+Advent Calendarに空きがあったので投稿することにしました。
+この記事ではKotlin/Nativeの標準ライブラリの実装について解説します。</p>
+                  <a href="https://youta1119.github.io/post/2018/12/24/about-kotlin-native-stdlib/" class="post-read-more">[Read More]</a>
                 
               </div>
 
               
                 <div class="blog-tags">
                   
-                    <a href="https://youta1119.github.io/tags/xv6-rs/">xv6-rs</a>&nbsp;
+                    <a href="https://youta1119.github.io/tags/kotlin/">kotlin</a>&nbsp;
                   
-                    <a href="https://youta1119.github.io/tags/rust/">rust</a>&nbsp;
-                  
-                    <a href="https://youta1119.github.io/tags/%E8%87%AA%E4%BD%9Cos/">自作OS</a>&nbsp;
+                    <a href="https://youta1119.github.io/tags/kotlin-native/">kotlin-native</a>&nbsp;
                   
                 </div>
               
@@ -315,7 +319,7 @@ if (!doNotTrack) {
           
           <li>
             
-            <a href="https://youta1119.github.io/tags/%E8%87%AA%E4%BD%9Cos/index.xml" title="RSS">
+            <a href="https://youta1119.github.io/categories/kotlin/index.xml" title="RSS">
             
               <span class="fa-stack fa-lg">
                 <i class="fas fa-circle fa-stack-2x"></i>
