@@ -76,7 +76,7 @@ Advent Calendarに空きがあったので投稿することにしました。
   "description" : "はじめに この記事はKotlinアドベントカレンダー24日目の記事です。 Advent Calendarに空きがあったので投稿することにしました。 この記事ではKotlin/Nativeの標準ライブラリの実装について解説します。
 ",
   "inLanguage" : "en",
-  "wordCount": 2478,
+  "wordCount": 2495,
   "datePublished" : "2018-12-24T00:00:00",
   "dateModified" : "2018-12-24T00:00:00",
   "image" : "https://youta1119.github.io/img/avatar.png",
@@ -293,7 +293,7 @@ if (!doNotTrack) {
     &nbsp;|&nbsp;<i class="fas fa-clock"></i>&nbsp;5&nbsp;minutes
   
   
-    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;2478&nbsp;words
+    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;2495&nbsp;words
   
   
     &nbsp;|&nbsp;<i class="fas fa-user"></i>&nbsp;yota ogino
@@ -347,9 +347,9 @@ Advent Calendarに空きがあったので投稿することにしました。
 
 <h2 id="kotlin-nativeの標準ライブラリの実装について">Kotlin/Nativeの標準ライブラリの実装について</h2>
 
-<p>Kotlin/Nativeの標準ライブラリの実装の解説の前にKotlin/Nativeの<a href="https://github.com/JetBrains/kotlin-native">リポジトリ</a>の構造を解説したいと思います。
+<p>Kotlin/Nativeの標準ライブラリの実装の解説の前にKotlin/Nativeの<a href="https://github.com/JetBrains/kotlin-native">リポジトリ</a>の構造について解説したいと思います。
 Kotlin/Nativeのリポジトリの構造は以下のようになっていて、直下のディレクトリgradleモジュールになっています。
-ソースコードを軽く読んでみた感じそれぞれのモジュールは以下のような役割をもっているみたいです。</p>
+ソースコードを軽く読んでみた感じそれぞれのモジュールは以下のような役割をもっているです。</p>
 <div class="highlight"><pre class="chroma">.
 ├── Interop c言語との相互運用のためのモジュール
 ├── backend.native コンパイラ本体
@@ -443,7 +443,7 @@ C++とKotlinがミックスされて実装されているものの例として<a
 おそらくC言語<code>extern</code>と同様のものだと思われます。</p>
 
 <p>では実際の関数の定義はどこにあるのでしょうか？<code>@SymbolName</code>という謎のアノテーションが関数についてますね。
-実はこれ、C++の関数名と対応していて、getメソッドが呼ばれる, C++の関数<code>Kotlin_String_get</code>が呼ばれるようになっています。
+実はこれ、C++の関数名と対応していて、getメソッドが呼ばれるとC++の関数<code>Kotlin_String_get</code>が呼ばれるようになっています。
 ちなみに、<code>Kotlin_String_get</code>のC++での<a href="https://github.com/JetBrains/kotlin-native/blob/v1.0.3/runtime/src/main/cpp/KString.cpp#L763">実装</a>はこうなっています。</p>
 <div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">KChar</span> <span class="nf">Kotlin_String_get</span><span class="p">(</span><span class="n">KString</span> <span class="n">thiz</span><span class="p">,</span> <span class="n">KInt</span> <span class="n">index</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">if</span> <span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">uint32_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">thiz</span><span class="o">-&gt;</span><span class="n">count_</span><span class="p">)</span> <span class="p">{</span>
@@ -461,7 +461,7 @@ C++とKotlinがミックスされて実装されているものの例として<a
 ものすごく簡単なコードを用意しました。</p>
 <div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">fun</span> <span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="n">Array</span><span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;)</span> <span class="p">{</span>
     <span class="k">val</span> <span class="py">s</span> <span class="p">=</span> <span class="s">&#34;hoge&#34;</span>
-	<span class="n">println</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="m">0</span><span class="p">))</span>
+    <span class="n">println</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="m">0</span><span class="p">))</span>
 <span class="p">}</span></code></pre></div>
 <p>コンパイルして動かしてみます。</p>
 <div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ kotlinc-native main.kt
@@ -510,7 +510,7 @@ $ ./program.kexe</code></pre></div>
 100008123:	48 89 df 	movq	%rbx, %rdi
 100008126:	e8 ed 7b 04 00 	callq	293869
 10000812b:	0f 1f 44 00 00 	nopl	(%rax,%rax)</pre></div>
-<p>main関数のアセンブリをじっくりみていくとありました。ちゃんと呼ばれてますね。</p>
+<p>main関数のアセンブリをじっくりみていくとありました。ちゃん<code>Kotlin_String_get</code>が呼ばれてますね。</p>
 <div class="highlight"><pre class="chroma">1000080db:	e8 10 09 04 00 	callq	264464 &lt;_Kotlin_String_get&gt;</pre></div>
 <h2 id="終わりに">終わりに</h2>
 
