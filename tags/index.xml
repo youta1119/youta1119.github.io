@@ -7,7 +7,7 @@
     <generator>Hugo -- gohugo.io</generator>
     <managingEditor>dev.youta1119@gmail.com (yota ogino)</managingEditor>
     <webMaster>dev.youta1119@gmail.com (yota ogino)</webMaster>
-    <lastBuildDate>Mon, 24 Dec 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 10 Jun 2019 01:08:16 +0900</lastBuildDate>
     
 	<atom:link href="https://youta1119.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
@@ -15,16 +15,16 @@
     <item>
       <title>Kotlin</title>
       <link>https://youta1119.github.io/tags/kotlin/</link>
-      <pubDate>Mon, 24 Dec 2018 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 10 Jun 2019 01:08:16 +0900</pubDate>
       <author>dev.youta1119@gmail.com (yota ogino)</author>
       <guid>https://youta1119.github.io/tags/kotlin/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Kotlin Native</title>
+      <title>Kotlin/Native</title>
       <link>https://youta1119.github.io/tags/kotlin-native/</link>
-      <pubDate>Mon, 24 Dec 2018 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 10 Jun 2019 01:08:16 +0900</pubDate>
       <author>dev.youta1119@gmail.com (yota ogino)</author>
       <guid>https://youta1119.github.io/tags/kotlin-native/</guid>
       <description></description>
