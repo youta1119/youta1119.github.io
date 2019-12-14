@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+  <head>
+    
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <title>自作Kotlinコンパイラの作り方 - youta1119&#39;s blog</title>
+  <meta name="description" content="はじめに
+少し遅刻しましたが、これはKotlin Advent Calendar 201914日目の記事です。
+少し前からkotlinc-dotnetというKotlinを.Netで動くexe形式にコンパイルするコンパイラを作っていて、kotlinのコンパイラ周りの知見が溜まってきたので、この記事では自作Kotlinコンパイラの作り方を解説します">
+  <meta name="author" content="yota ogino"/><script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "WebSite",
+    "name": "youta1119\x27s blog",
+    
+    "url": "https:\/\/youta1119.github.io"
+}
+</script><script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Organization",
+  "name": "",
+  "url": "https:\/\/youta1119.github.io"
+  
+  
+  
+  
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [{
+        "@type": "ListItem",
+        "position": 1,
+        "item": {
+          "@id": "https:\/\/youta1119.github.io",
+          "name": "home"
+        }
+    },{
+        "@type": "ListItem",
+        "position": 3,
+        "item": {
+          "@id": "https:\/\/youta1119.github.io\/post\/2019\/12\/14\/how-to-create-own-kotlin-compiler\/",
+          "name": "自作 kotlinコンパイラの作り方"
+        }
+    }]
+}
+</script><script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "Article",
+  "author": {
+    "name" : "yota ogino"
+  },
+  "headline": "自作Kotlinコンパイラの作り方",
+  "description" : "はじめに 少し遅刻しましたが、これはKotlin Advent Calendar 201914日目の記事です。 少し前からkotlinc-dotnetというKotlinを.Netで動くexe形式にコンパイルするコンパイラを作っていて、kotlinのコンパイラ周りの知見が溜まってきたので、この記事では自作Kotlinコンパイラの作り方を解説します\n",
+  "inLanguage" : "en",
+  "wordCount":  5565 ,
+  "datePublished" : "2019-12-14T21:00:11",
+  "dateModified" : "2019-12-14T21:00:11",
+  "image" : "https:\/\/youta1119.github.io\/img\/avatar.png",
+  "keywords" : [ "kotlin" ],
+  "mainEntityOfPage" : "https:\/\/youta1119.github.io\/post\/2019\/12\/14\/how-to-create-own-kotlin-compiler\/",
+  "publisher" : {
+    "@type": "Organization",
+    "name" : "https:\/\/youta1119.github.io",
+    "logo" : {
+        "@type" : "ImageObject",
+        "url" : "https:\/\/youta1119.github.io\/img\/avatar.png",
+        "height" :  60 ,
+        "width" :  60
+    }
+  }
+}
+</script>
+
+<meta property="og:title" content="自作Kotlinコンパイラの作り方" />
+<meta property="og:description" content="はじめに
+少し遅刻しましたが、これはKotlin Advent Calendar 201914日目の記事です。
+少し前からkotlinc-dotnetというKotlinを.Netで動くexe形式にコンパイルするコンパイラを作っていて、kotlinのコンパイラ周りの知見が溜まってきたので、この記事では自作Kotlinコンパイラの作り方を解説します">
+<meta property="og:image" content="https://youta1119.github.io/img/avatar.png" />
+<meta property="og:url" content="https://youta1119.github.io/post/2019/12/14/how-to-create-own-kotlin-compiler/" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="youta1119&#39;s blog" />
+
+  <meta name="twitter:title" content="自作Kotlinコンパイラの作り方" />
+  <meta name="twitter:description" content="はじめに
+少し遅刻しましたが、これはKotlin Advent Calendar 201914日目の記事です。
+少し前からkotlinc-dotnetというKotlinを.Netで動くexe形式にコンパイルするコンパイラを作っていて、kotlinのコンパイラ周りの知見が溜まってきたので、この記事では自作Kotlinコンパイラの作り方を解説します">
+  <meta name="twitter:image" content="https://youta1119.github.io/img/avatar.png" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:site" content="@youta1119" />
+  <meta name="twitter:creator" content="@youta1119" />
+  <link href='https://youta1119.github.io/img/favicon.ico' rel='icon' type='image/x-icon'/>
+  <meta name="generator" content="Hugo 0.61.0" />
+  <link rel="alternate" href="https://youta1119.github.io/index.xml" type="application/rss+xml" title="youta1119&#39;s blog"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"><link rel="stylesheet" href="https://youta1119.github.io/css/main.css" /><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" />
+  <link rel="stylesheet" href="https://youta1119.github.io/css/highlight.min.css" /><link rel="stylesheet" href="https://youta1119.github.io/css/codeblock.css" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.css" integrity="sha384-h/L2W9KefUClHWaty3SLE5F/qvc4djlyR4qY3NUV5HGQBBW7stbcfff1+I/vmsHh" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/default-skin/default-skin.min.css" integrity="sha384-iD0dNku6PYSIQLyfTOpB06F2KCZJAKLOThS5HRe8b3ibhdEQ6eKsFf/EeFxdOt5R" crossorigin="anonymous">
+
+
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+	ga('create', 'UA-131292272-1', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+<script async src='https://www.google-analytics.com/analytics.js'></script>
+
+
+  </head>
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top navbar-custom">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="https://youta1119.github.io">youta1119&#39;s blog</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="main-navbar">
+      <ul class="nav navbar-nav navbar-right">
+        
+          
+            <li>
+              <a title="Blog" href="/">Blog</a>
+            </li>
+          
+        
+          
+            <li>
+              <a title="Categories" href="/categories">Categories</a>
+            </li>
+          
+        
+          
+            <li>
+              <a title="Tags" href="/tags">Tags</a>
+            </li>
+          
+        
+          
+            <li>
+              <a title="About" href="/page/about/">About</a>
+            </li>
+          
+        
+
+        
+
+        
+      </ul>
+    </div>
+
+    
+      <div class="avatar-container">
+        <div class="avatar-img-border">
+          <a title="youta1119&#39;s blog" href="https://youta1119.github.io">
+            <img class="avatar-img" src="https://youta1119.github.io/img/avatar.png" alt="youta1119&#39;s blog" />
+          </a>
+        </div>
+      </div>
+    
+
+  </div>
+</nav>
+
+
+
+
+    
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+
+  
+  
+  
+
+
+
+
+
+
+  
+
+  <header class="header-section ">
+    
+    <div class="intro-header no-img">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            <div class="post-heading">
+              
+                <h1>自作Kotlinコンパイラの作り方</h1>
+              
+              
+              
+              
+                <span class="post-meta">
+  
+  
+  <i class="fas fa-calendar"></i>&nbsp;Posted on December 14, 2019
+  
+  
+    &nbsp;|&nbsp;<i class="fas fa-clock"></i>&nbsp;12&nbsp;minutes
+  
+  
+    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;5565&nbsp;words
+  
+  
+    
+      &nbsp;|&nbsp;<i class="fas fa-user"></i>&nbsp;yota ogino
+    
+  
+  
+</span>
+
+
+              
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+
+    
+<div class="container" role="main">
+  <div class="row">
+    <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+      <article role="main" class="blog-post">
+        <h2 id="heading">はじめに</h2>
+<p>少し遅刻しましたが、これは<a href="https://qiita.com/advent-calendar/2019/kotlin">Kotlin Advent Calendar 2019</a>14日目の記事です。
+少し前からkotlinc-dotnetというKotlinを.Netで動くexe形式にコンパイルするコンパイラを作っていて、kotlinのコンパイラ周りの知見が溜まってきたので、この記事では自作Kotlinコンパイラの作り方を解説します</p>
+<!-- raw HTML omitted -->
+<h2 id="kotlin">自作Kotlinコンパイラとは?</h2>
+<p>自作Kotlinコンパイラとはその名の通り、自作したkotlinコンパイラの事です。
+現在Kotlin公式のコンパイラではJVM・JS・Native以外の環境でKotlinを動かすことはできませんが、独自でコンパイラを作れば任意の環境でKotlinを動かすことができます。
+この記事では簡単なKotlinのプログラムを.NETで動くexe形式に変換するコンパイラのざっくり解説をします。</p>
+<h2 id="kotlin-1">自作Kotlinコンパイラの作り方</h2>
+<p>それでは自作Kotlinコンパイラの作り方をざっくり解説します。
+いきなり完璧なコンパイラ作るのは無理なのでコンパイラの仕様をめちゃくちゃ簡単にします。
+今回作るコンパイラの仕様です。</p>
+<ul>
+<li>コンパイルできるのはmain関数だけ</li>
+<li>main関数では<code>println</code>関数しか呼び出せない</li>
+<li>Kotlinのプログラムを.NETで動くexe形式に変換する</li>
+</ul>
+<p>つまり以下のようなプログラムを.NETで動くexe形式に変換するコンパイラを作ります。</p>
+<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">fun</span> <span class="nf">main</span><span class="p">(</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">println</span><span class="p">(</span><span class="s">&#34;hello world.&#34;</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div><p>今回作るコンパイラのソースコードはGitHubにあります。</p>
+<!-- raw HTML omitted -->
+<h3 id="heading-1">検証環境</h3>
+<ul>
+<li>mono 6.4.0.198</li>
+<li>kotlin 1.3.61</li>
+<li>gradle 5.6</li>
+</ul>
+<h3 id="step1-">step1 プロジェクトを作成</h3>
+<p>step1での変更点は<a href="https://github.com/youta1119/kotlin-toy-compiler/commit/1ed3be4c3927e07278135564f373cb8e38027d48">こちら</a></p>
+<p>まずはプロジェクトを作成します。プロジェクトを作成する際にgradleの依存関係に<code>org.jetbrains.kotlin kotlin-compiler</code>を追加します。
+<code>org.jetbrains.kotlin kotlin-compiler</code>はKotlin/JVM, Kotlin/JS, Kotlin/Nativeのコンパイラが共通で使っているパッケージでAstパーサーやKotlinの中間表現（IR）などが含まれています。</p>
+<p>KotlinはC言語に比べると言語仕様が複雑なので、パーサーを一から書こうとすると骨が折れます。なので今回は<code>org.jetbrains.kotlin kotlin-compiler</code>を使う事にします。</p>
+<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="c1">//build.gradle.kts
+</span><span class="c1"></span><span class="n">plugins</span> <span class="p">{</span>
+    <span class="n">kotlin</span><span class="p">(</span><span class="s">&#34;jvm&#34;</span><span class="p">)</span> <span class="n">version</span> <span class="s">&#34;1.3.61&#34;</span>
+    <span class="n">id</span><span class="p">(</span><span class="s">&#34;com.github.johnrengelman.shadow&#34;</span><span class="p">)</span> <span class="n">version</span> <span class="s">&#34;5.0.0&#34;</span>
+    <span class="n">application</span>
+<span class="p">}</span>
+
+<span class="n">group</span> <span class="p">=</span> <span class="s">&#34;com.github.youta1119&#34;</span>
+<span class="n">version</span> <span class="p">=</span> <span class="s">&#34;1.0-SNAPSHOT&#34;</span>
+<span class="k">val</span> <span class="py">mainClass</span> <span class="p">=</span> <span class="s">&#34;com.github.youta1119.kotlin.MainKt&#34;</span>
+<span class="n">repositories</span> <span class="p">{</span>
+    <span class="n">jcenter</span><span class="p">(</span><span class="p">)</span>
+    <span class="n">mavenCentral</span><span class="p">(</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="n">dependencies</span> <span class="p">{</span>
+    <span class="n">implementation</span><span class="p">(</span><span class="n">kotlin</span><span class="p">(</span><span class="s">&#34;stdlib-jdk8&#34;</span><span class="p">)</span><span class="p">)</span>
+    <span class="n">implementation</span><span class="p">(</span><span class="n">kotlin</span><span class="p">(</span><span class="s">&#34;compiler&#34;</span><span class="p">)</span><span class="p">)</span><span class="c1">//追加
+</span><span class="c1"></span><span class="p">}</span>
+</code></pre></div><h3 id="step2-cli">step2 コンパイラのCLI部分を作成</h3>
+<p>step2での変更点は<a href="https://github.com/youta1119/kotlin-toy-compiler/commit/de6133cb119338814f38d9b85faac58f5a96317f">こちら</a></p>
+<p>次にコンパイラのCLI部分を作成します。
+まず、コンパイラのコマンドライン引数を定義をします。
+<code>CommonCompilerArguments</code>を継承した<code>K2DotNetCompilerArguments</code>というクラスを作成します。
+<code>CommonCompilerArguments</code>を継承<code>-version</code>などの引数を使えるようにするためです。</p>
+<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="c1">//K2DotNetCompilerArguments.kt
+</span><span class="c1"></span><span class="k">package</span> <span class="nn">com.github.youta1119.kotlin.cli</span>
+
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.cli.common.arguments.Argument</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.cli.common.arguments.CommonCompilerArguments</span>
+<span class="c1">//コマンドライン引数の定義
+</span><span class="c1"></span><span class="k">class</span> <span class="nc">K2DotNetCompilerArguments</span><span class="p">:</span> <span class="n">CommonCompilerArguments</span><span class="p">(</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// @Argumentアノテーションをフィールドにつけるとコマンドライン引数をパースした結果がフィールドに入る
+</span><span class="c1"></span>    <span class="n">@Argument</span><span class="p">(</span><span class="n">value</span> <span class="p">=</span> <span class="s">&#34;-output&#34;</span><span class="p">,</span> <span class="n">shortName</span> <span class="p">=</span> <span class="s">&#34;-o&#34;</span><span class="p">,</span> <span class="n">valueDescription</span> <span class="p">=</span> <span class="s">&#34;&lt;name&gt;&#34;</span><span class="p">,</span> <span class="n">description</span> <span class="p">=</span> <span class="s">&#34;Output name&#34;</span><span class="p">)</span>
+    <span class="k">var</span> <span class="py">outputName</span><span class="p">:</span> <span class="n">String</span><span class="p">?</span> <span class="p">=</span> <span class="k">null</span>
+<span class="p">}</span>
+</code></pre></div><p>次にCLI部を作成します。<code>CLICompiler</code>というクラスを継承した<code>K2DotNetCompiler</code>というクラスを作ります。
+<code>CLICompiler</code>はコマンドライン引数のパースをいい感じにやってくれるクラスです。</p>
+<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="c1">//K2DotNetCompiler.kt
+</span><span class="c1"></span><span class="k">package</span> <span class="nn">com.github.youta1119.kotlin.cli</span>
+
+<span class="k">import</span> <span class="nn">com.github.youta1119.kotlin.compiler.DotNetConfigurationKeys</span>
+<span class="k">import</span> <span class="nn">com.intellij.openapi.Disposable</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.cli.common.CLICompiler</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.cli.common.CommonCompilerPerformanceManager</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.cli.common.ExitCode</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.cli.common.config.addKotlinSourceRoot</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.config.CompilerConfiguration</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.config.Services</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.metadata.deserialization.BinaryVersion</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.utils.KotlinPaths</span>
+
+<span class="k">class</span> <span class="nc">K2DotNetCompiler</span> <span class="p">:</span> <span class="n">CLICompiler</span><span class="p">&lt;</span><span class="n">K2DotNetCompilerArguments</span><span class="p">&gt;</span><span class="p">(</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">override</span> <span class="k">val</span> <span class="py">performanceManager</span><span class="p">:</span> <span class="n">CommonCompilerPerformanceManager</span> <span class="k">by</span> <span class="n">lazy</span> <span class="p">{</span>
+        <span class="n">K2DotNetCompilerPerformanceManager</span><span class="p">(</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="c1">//コンパイラの処理を書くところ
+</span><span class="c1"></span>    <span class="k">override</span> <span class="k">fun</span> <span class="nf">doExecute</span><span class="p">(</span>
+        <span class="n">arguments</span><span class="p">:</span> <span class="n">K2DotNetCompilerArguments</span><span class="p">,</span>
+        <span class="n">configuration</span><span class="p">:</span> <span class="n">CompilerConfiguration</span><span class="p">,</span>
+        <span class="n">rootDisposable</span><span class="p">:</span> <span class="n">Disposable</span><span class="p">,</span>
+        <span class="n">paths</span><span class="p">:</span> <span class="n">KotlinPaths</span><span class="p">?</span>
+    <span class="p">)</span><span class="p">:</span> <span class="n">ExitCode</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">ExitCode</span><span class="p">.</span><span class="n">OK</span>
+    <span class="p">}</span>
+    <span class="c1">//Platform特有の設定はここでやる
+</span><span class="c1"></span>    <span class="k">override</span> <span class="k">fun</span> <span class="nf">setupPlatformSpecificArgumentsAndServices</span><span class="p">(</span>
+        <span class="n">configuration</span><span class="p">:</span> <span class="n">CompilerConfiguration</span><span class="p">,</span>
+        <span class="n">arguments</span><span class="p">:</span> <span class="n">K2DotNetCompilerArguments</span><span class="p">,</span>
+        <span class="n">services</span><span class="p">:</span> <span class="n">Services</span>
+    <span class="p">)</span> <span class="p">{</span>
+        <span class="k">val</span> <span class="py">commonSources</span> <span class="p">=</span> <span class="n">arguments</span><span class="p">.</span><span class="n">commonSources</span><span class="o">?.</span><span class="n">toSet</span><span class="p">(</span><span class="p">)</span><span class="p">.</span><span class="n">orEmpty</span><span class="p">(</span><span class="p">)</span>
+        <span class="n">arguments</span><span class="p">.</span><span class="n">freeArgs</span><span class="p">.</span><span class="n">forEach</span> <span class="p">{</span>
+            <span class="n">configuration</span><span class="p">.</span><span class="n">addKotlinSourceRoot</span><span class="p">(</span><span class="n">it</span><span class="p">,</span> <span class="n">it</span> <span class="k">in</span> <span class="n">commonSources</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="n">with</span><span class="p">(</span><span class="n">DotNetConfigurationKeys</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">with</span><span class="p">(</span><span class="n">configuration</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">arguments</span><span class="p">.</span><span class="n">outputName</span><span class="o">?.</span><span class="n">let</span> <span class="p">{</span> <span class="n">put</span><span class="p">(</span><span class="n">OUTPUT_NAME</span><span class="p">,</span> <span class="n">it</span><span class="p">)</span> <span class="p">}</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">override</span> <span class="k">fun</span> <span class="nf">createArguments</span><span class="p">(</span><span class="p">)</span><span class="p">:</span> <span class="n">K2DotNetCompilerArguments</span> <span class="p">=</span>
+        <span class="n">K2DotNetCompilerArguments</span><span class="p">(</span><span class="p">)</span>
+
+    <span class="k">override</span> <span class="k">fun</span> <span class="nf">createMetadataVersion</span><span class="p">(</span><span class="n">versionArray</span><span class="p">:</span> <span class="n">IntArray</span><span class="p">)</span><span class="p">:</span> <span class="n">BinaryVersion</span> <span class="p">=</span>
+        <span class="n">K2DotNetMetadataVersion</span><span class="p">(</span><span class="p">)</span>
+
+    <span class="k">override</span> <span class="k">fun</span> <span class="nf">executableScriptFileName</span><span class="p">(</span><span class="p">)</span><span class="p">:</span> <span class="n">String</span> <span class="p">=</span> <span class="s">&#34;kotlinc-dotnet&#34;</span>
+    <span class="c1">//よくわからないけど必要
+</span><span class="c1"></span>    <span class="k">class</span> <span class="nc">K2DotNetCompilerPerformanceManager</span> <span class="p">:</span> <span class="n">CommonCompilerPerformanceManager</span><span class="p">(</span><span class="s">&#34;Kotlin to .Net Compiler&#34;</span><span class="p">)</span>
+    <span class="c1">//よくわからないけど必要
+</span><span class="c1"></span>    <span class="k">class</span> <span class="nc">K2DotNetMetadataVersion</span><span class="p">(</span><span class="k">vararg</span> <span class="n">numbers</span><span class="p">:</span> <span class="n">Int</span><span class="p">)</span> <span class="p">:</span> <span class="n">BinaryVersion</span><span class="p">(</span><span class="p">*</span><span class="n">numbers</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">override</span> <span class="k">fun</span> <span class="nf">isCompatible</span><span class="p">(</span><span class="p">)</span><span class="p">:</span> <span class="n">Boolean</span> <span class="p">=</span> <span class="k">false</span>
+    <span class="p">}</span>
+
+    <span class="k">companion</span> <span class="k">object</span> <span class="p">{</span>
+        <span class="n">@JvmStatic</span>
+        <span class="k">fun</span> <span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="n">Array</span><span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">doMain</span><span class="p">(</span><span class="n">K2DotNetCompiler</span><span class="p">(</span><span class="p">)</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div><p>これでコンパイラのCLI部分は完成です。今の段階で<code>-help</code>オプションをつけて自作コンパイラを動かしてみるとこんな感じになります。
+ちゃんとヘルプが表示されますね。</p>
+<!-- raw HTML omitted -->
+<h3 id="step3-">step3. コンパイラのベース部分作成</h3>
+<p>step3での変更点は<a href="https://github.com/youta1119/kotlin-toy-compiler/commit/10ffec61a0c3f2216d9665e7433337f1afbeeb13">こちら</a></p>
+<p>CLIができたので、次にコンパイラのベース部分を作っていきます。
+まず<code>CommonBackendContext</code>を継承した<code>DotNetBackendContext</code>を作成します。<code>DotNetBackendContext</code>はコンパイル中の状態を保持するために使われるものです。</p>
+<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="c1">// DotNetBackendContext.kt
+</span><span class="c1"></span><span class="k">package</span> <span class="nn">com.github.youta1119.kotlin.compiler</span>
+
+
+<span class="k">import</span> <span class="nn">com.github.youta1119.kotlin.config.DotNetConfigurationKeys</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.backend.common.CommonBackendContext</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.backend.common.ir.DeclarationFactory</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.backend.common.ir.Ir</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.backend.common.ir.SharedVariablesManager</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.cli.common.CLIConfigurationKeys</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.cli.common.messages.MessageCollector</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.config.CompilerConfiguration</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.descriptors.ModuleDescriptor</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.ir.IrElement</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.ir.declarations.IrFile</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.ir.descriptors.IrBuiltIns</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.name.FqName</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.resolve.BindingContext</span>
+
+<span class="k">class</span> <span class="nc">DotNetBackendContext</span><span class="p">(</span><span class="k">val</span> <span class="py">environment</span><span class="p">:</span> <span class="n">KotlinCoreEnvironment</span><span class="p">,</span> <span class="k">override</span> <span class="k">val</span> <span class="py">configuration</span><span class="p">:</span> <span class="n">CompilerConfiguration</span><span class="p">)</span> <span class="p">:</span>
+    <span class="n">CommonBackendContext</span> <span class="p">{</span>
+    <span class="k">lateinit</span> <span class="k">var</span> <span class="py">moduleDescriptor</span><span class="p">:</span> <span class="n">ModuleDescriptor</span>
+    <span class="k">lateinit</span> <span class="k">var</span> <span class="py">bindingContext</span><span class="p">:</span> <span class="n">BindingContext</span>
+
+    <span class="k">val</span> <span class="py">phaseConfig</span> <span class="p">=</span> <span class="n">configuration</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="n">CLIConfigurationKeys</span><span class="p">.</span><span class="n">PHASE_CONFIG</span><span class="p">)</span><span class="o">!!</span>
+
+    <span class="k">val</span> <span class="py">outputName</span> <span class="p">=</span> <span class="n">configuration</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="n">DotNetConfigurationKeys</span><span class="p">.</span><span class="n">OUTPUT_NAME</span><span class="p">)</span> <span class="o">?:</span> <span class="n">DEFAULT_OUTPUT_NAME</span>
+
+    <span class="k">override</span> <span class="k">val</span> <span class="py">builtIns</span><span class="p">:</span> <span class="n">DotNetBuiltIns</span> <span class="k">by</span> <span class="n">lazy</span> <span class="p">{</span>
+        <span class="n">moduleDescriptor</span><span class="p">.</span><span class="n">builtIns</span> <span class="k">as</span> <span class="n">DotNetBuiltIns</span>
+    <span class="p">}</span>
+
+    <span class="k">override</span> <span class="k">val</span> <span class="py">irBuiltIns</span><span class="p">:</span> <span class="n">IrBuiltIns</span>
+        <span class="k">get</span><span class="p">(</span><span class="p">)</span> <span class="p">=</span> <span class="n">TODO</span><span class="p">(</span><span class="s">&#34;not implemented&#34;</span><span class="p">)</span>
+
+    <span class="k">override</span> <span class="k">val</span> <span class="py">sharedVariablesManager</span><span class="p">:</span> <span class="n">SharedVariablesManager</span>
+        <span class="k">get</span><span class="p">(</span><span class="p">)</span> <span class="p">=</span> <span class="n">TODO</span><span class="p">(</span><span class="s">&#34;not implemented&#34;</span><span class="p">)</span>
+
+    <span class="k">override</span> <span class="k">val</span> <span class="py">declarationFactory</span><span class="p">:</span> <span class="n">DeclarationFactory</span>
+        <span class="k">get</span><span class="p">(</span><span class="p">)</span> <span class="p">=</span> <span class="n">TODO</span><span class="p">(</span><span class="s">&#34;not implemented&#34;</span><span class="p">)</span>
+    <span class="k">override</span> <span class="k">var</span> <span class="py">inVerbosePhase</span><span class="p">:</span> <span class="n">Boolean</span> <span class="p">=</span> <span class="k">false</span>
+
+    <span class="k">override</span> <span class="k">val</span> <span class="py">internalPackageFqn</span><span class="p">:</span> <span class="n">FqName</span>
+        <span class="k">get</span><span class="p">(</span><span class="p">)</span> <span class="p">=</span> <span class="n">TODO</span><span class="p">(</span><span class="s">&#34;not implemented&#34;</span><span class="p">)</span>
+
+    <span class="k">override</span> <span class="k">val</span> <span class="py">ir</span><span class="p">:</span> <span class="n">Ir</span><span class="p">&lt;</span><span class="n">CommonBackendContext</span><span class="p">&gt;</span>
+        <span class="k">get</span><span class="p">(</span><span class="p">)</span> <span class="p">=</span> <span class="n">TODO</span><span class="p">(</span><span class="s">&#34;not implemented&#34;</span><span class="p">)</span>
+
+    <span class="k">override</span> <span class="k">fun</span> <span class="nf">log</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="p">(</span><span class="p">)</span> <span class="p">-</span><span class="p">&gt;</span> <span class="n">String</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">inVerbosePhase</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">println</span><span class="p">(</span><span class="n">message</span><span class="p">(</span><span class="p">)</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">override</span> <span class="k">fun</span> <span class="nf">report</span><span class="p">(</span><span class="n">element</span><span class="p">:</span> <span class="n">IrElement</span><span class="p">?</span><span class="p">,</span> <span class="n">irFile</span><span class="p">:</span> <span class="n">IrFile</span><span class="p">?</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="n">String</span><span class="p">,</span> <span class="n">isError</span><span class="p">:</span> <span class="n">Boolean</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">messageCollector</span><span class="p">.</span><span class="n">report</span><span class="p">(</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">isError</span><span class="p">)</span> <span class="n">CompilerMessageSeverity</span><span class="p">.</span><span class="n">ERROR</span> <span class="k">else</span> <span class="n">CompilerMessageSeverity</span><span class="p">.</span><span class="n">WARNING</span><span class="p">,</span>
+            <span class="n">message</span><span class="p">,</span> <span class="k">null</span>
+        <span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="k">private</span> <span class="k">val</span> <span class="py">messageCollector</span><span class="p">:</span> <span class="n">MessageCollector</span>
+        <span class="k">get</span><span class="p">(</span><span class="p">)</span> <span class="p">=</span> <span class="n">configuration</span><span class="p">.</span><span class="n">getNotNull</span><span class="p">(</span><span class="n">CLIConfigurationKeys</span><span class="p">.</span><span class="n">MESSAGE_COLLECTOR_KEY</span><span class="p">)</span>
+
+    <span class="k">companion</span> <span class="k">object</span> <span class="p">{</span>
+        <span class="k">private</span> <span class="k">const</span> <span class="k">val</span> <span class="py">DEFAULT_OUTPUT_NAME</span> <span class="p">=</span> <span class="s">&#34;program&#34;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div><p>次にコンパイラのフェーズを作っていきます。公式のKotlinコンパイラはフェーズという単位で処理を分割する設計になっているのでそれを真似します。とりあえず何もしないNoOpをいうフェーズを作ってみます。</p>
+<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="c1">//CompilerPhases.kt
+</span><span class="c1"></span><span class="k">package</span> <span class="nn">com.github.youta1119.kotlin.compiler</span>
+
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.backend.common.phaser.*</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.cli.common.messages.AnalyzerWithCompilerReport</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.config.languageVersionSettings</span>
+
+
+<span class="k">internal</span> <span class="k">fun</span> <span class="nf">createUnitPhase</span><span class="p">(</span>
+    <span class="n">name</span><span class="p">:</span> <span class="n">String</span><span class="p">,</span>
+    <span class="n">description</span><span class="p">:</span> <span class="n">String</span><span class="p">,</span>
+    <span class="n">prerequisite</span><span class="p">:</span> <span class="n">Set</span><span class="p">&lt;</span><span class="n">AnyNamedPhase</span><span class="p">&gt;</span> <span class="p">=</span> <span class="n">emptySet</span><span class="p">(</span><span class="p">)</span><span class="p">,</span>
+    <span class="n">op</span><span class="p">:</span> <span class="n">DotNetBackendContext</span><span class="p">.</span><span class="p">(</span><span class="p">)</span> <span class="p">-</span><span class="p">&gt;</span> <span class="n">Unit</span>
+<span class="p">)</span> <span class="p">=</span> <span class="n">namedOpUnitPhase</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">prerequisite</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
+
+<span class="c1">// 何もしないフェーズ
+</span><span class="c1"></span><span class="k">internal</span> <span class="k">val</span> <span class="py">noOpPhase</span> <span class="p">=</span> <span class="n">createUnitPhase</span><span class="p">(</span>
+    <span class="n">op</span> <span class="p">=</span> <span class="p">{</span>
+       <span class="n">println</span><span class="p">(</span><span class="s">&#34;no op&#34;</span><span class="p">)</span>
+    <span class="p">}</span><span class="p">,</span>
+    <span class="n">name</span> <span class="p">=</span> <span class="s">&#34;NoOp&#34;</span><span class="p">,</span>
+    <span class="n">description</span> <span class="p">=</span> <span class="s">&#34;no-op&#34;</span>
+<span class="p">)</span>
+<span class="c1">//コンパイルに使うの全てのフェーズをまとめたフェーズ
+</span><span class="c1"></span><span class="k">val</span> <span class="py">toplevelPhase</span><span class="p">:</span> <span class="n">CompilerPhase</span><span class="p">&lt;</span><span class="n">DotNetBackendContext</span><span class="p">,</span> <span class="n">Unit</span><span class="p">,</span> <span class="n">Unit</span><span class="p">&gt;</span> <span class="p">=</span> <span class="n">namedUnitPhase</span><span class="p">(</span>
+    <span class="n">name</span> <span class="p">=</span> <span class="s">&#34;Compiler&#34;</span><span class="p">,</span>
+    <span class="n">description</span> <span class="p">=</span> <span class="s">&#34;The whole compilation process&#34;</span><span class="p">,</span>
+    <span class="n">lower</span> <span class="p">=</span> <span class="n">noOpPhase</span>
+<span class="p">)</span>
+</code></pre></div><p>フェーズを作成したら<code>toplevelPhase</code>を呼び出す<code>compileToDotNetByteCode</code>関数を作成します。
+また<code>K2DotNetCompiler</code>の<code>doExecute</code>メソッドを修正して<code>compileToDotNetByteCode</code>を呼び出すようにします。</p>
+<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="c1">//compiler.kt
+</span><span class="c1"></span><span class="k">package</span> <span class="nn">com.github.youta1119.kotlin.compiler</span>
+
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.backend.common.phaser.invokeToplevel</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.config.CompilerConfiguration</span>
+
+
+<span class="k">fun</span> <span class="nf">compileToDotNetByteCode</span><span class="p">(</span><span class="n">environment</span><span class="p">:</span> <span class="n">KotlinCoreEnvironment</span><span class="p">,</span> <span class="n">configuration</span><span class="p">:</span> <span class="n">CompilerConfiguration</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">val</span> <span class="py">context</span> <span class="p">=</span> <span class="n">DotNetBackendContext</span><span class="p">(</span><span class="n">environment</span><span class="p">,</span> <span class="n">configuration</span><span class="p">)</span>
+    <span class="n">toplevelPhase</span><span class="p">.</span><span class="n">invokeToplevel</span><span class="p">(</span><span class="n">context</span><span class="p">.</span><span class="n">phaseConfig</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">Unit</span><span class="p">)</span>
+<span class="p">}</span>
+
+
+<span class="c1">// K2DotNetCompiler.kt
+</span><span class="c1"></span><span class="k">package</span> <span class="nn">com.github.youta1119.kotlin.cli</span>
+
+<span class="k">import</span> <span class="nn">com.github.youta1119.kotlin.compiler.compileToDotNetByteCode</span>
+<span class="k">import</span> <span class="nn">com.github.youta1119.kotlin.compiler.toplevelPhase</span>
+<span class="k">import</span> <span class="nn">com.github.youta1119.kotlin.config.DotNetConfigurationKeys</span>
+<span class="k">import</span> <span class="nn">com.intellij.openapi.Disposable</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.cli.common.*</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.cli.common.config.addKotlinSourceRoot</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.cli.common.messages.MessageCollector</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.cli.common.messages.MessageUtil</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.cli.common.messages.OutputMessageUtil</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.cli.jvm.compiler.EnvironmentConfigFiles</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.codegen.CompilationException</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.config.CompilerConfiguration</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.config.Services</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.metadata.deserialization.BinaryVersion</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.utils.KotlinPaths</span>
+
+<span class="k">class</span> <span class="nc">K2DotNetCompiler</span> <span class="p">:</span> <span class="n">CLICompiler</span><span class="p">&lt;</span><span class="n">K2DotNetCompilerArguments</span><span class="p">&gt;</span><span class="p">(</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="cm">/*中略*/</span>
+    <span class="c1">//修正
+</span><span class="c1"></span>    <span class="k">override</span> <span class="k">fun</span> <span class="nf">doExecute</span><span class="p">(</span>
+        <span class="n">arguments</span><span class="p">:</span> <span class="n">K2DotNetCompilerArguments</span><span class="p">,</span>
+        <span class="n">configuration</span><span class="p">:</span> <span class="n">CompilerConfiguration</span><span class="p">,</span>
+        <span class="n">rootDisposable</span><span class="p">:</span> <span class="n">Disposable</span><span class="p">,</span>
+        <span class="n">paths</span><span class="p">:</span> <span class="n">KotlinPaths</span><span class="p">?</span>
+    <span class="p">)</span><span class="p">:</span> <span class="n">ExitCode</span> <span class="p">{</span>
+        <span class="c1">// KotlinCoreEnvironment生成. コンパイラに渡されたソースファイルのパス情報とかを保持してるっぽい
+</span><span class="c1"></span>        <span class="k">val</span> <span class="py">environment</span> <span class="p">=</span> <span class="n">KotlinCoreEnvironment</span><span class="p">.</span><span class="n">createForProduction</span><span class="p">(</span>
+            <span class="n">rootDisposable</span><span class="p">,</span>
+            <span class="n">configuration</span><span class="p">,</span>
+            <span class="n">EnvironmentConfigFiles</span><span class="p">.</span><span class="n">NATIVE_CONFIG_FILES</span>
+        <span class="p">)</span>
+        <span class="k">val</span> <span class="py">messageCollector</span> <span class="p">=</span> <span class="n">configuration</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="n">CLIConfigurationKeys</span><span class="p">.</span><span class="n">MESSAGE_COLLECTOR_KEY</span><span class="p">)</span> <span class="o">?:</span> <span class="n">MessageCollector</span><span class="p">.</span><span class="n">NONE</span>
+        <span class="c1">// コンパイラのフェーズの設定
+</span><span class="c1"></span>        <span class="n">configuration</span><span class="p">.</span><span class="n">put</span><span class="p">(</span>
+            <span class="n">CLIConfigurationKeys</span><span class="p">.</span><span class="n">PHASE_CONFIG</span><span class="p">,</span>
+            <span class="n">createPhaseConfig</span><span class="p">(</span><span class="n">toplevelPhase</span><span class="p">,</span> <span class="n">arguments</span><span class="p">,</span> <span class="n">messageCollector</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">environment</span><span class="p">.</span><span class="n">getSourceFiles</span><span class="p">(</span><span class="p">)</span><span class="p">.</span><span class="n">isEmpty</span><span class="p">(</span><span class="p">)</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">arguments</span><span class="p">.</span><span class="n">version</span><span class="p">)</span> <span class="k">return</span> <span class="n">ExitCode</span><span class="p">.</span><span class="n">OK</span>
+
+            <span class="n">messageCollector</span><span class="p">.</span><span class="n">report</span><span class="p">(</span><span class="n">CompilerMessageSeverity</span><span class="p">.</span><span class="n">ERROR</span><span class="p">,</span> <span class="s">&#34;No source files&#34;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">ExitCode</span><span class="p">.</span><span class="n">COMPILATION_ERROR</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="k">try</span> <span class="p">{</span>
+            <span class="c1">//コンパイルの実行
+</span><span class="c1"></span>            <span class="n">compileToDotNetByteCode</span><span class="p">(</span><span class="n">environment</span><span class="p">,</span> <span class="n">configuration</span><span class="p">)</span>
+            <span class="n">ExitCode</span><span class="p">.</span><span class="n">OK</span>
+        <span class="p">}</span> <span class="k">catch</span> <span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="n">CompilationException</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">messageCollector</span><span class="p">.</span><span class="n">report</span><span class="p">(</span>
+                <span class="n">CompilerMessageSeverity</span><span class="p">.</span><span class="n">EXCEPTION</span><span class="p">,</span>
+                <span class="n">OutputMessageUtil</span><span class="p">.</span><span class="n">renderException</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="p">,</span>
+                <span class="n">MessageUtil</span><span class="p">.</span><span class="n">psiElementToMessageLocation</span><span class="p">(</span><span class="n">e</span><span class="p">.</span><span class="n">element</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">ExitCode</span><span class="p">.</span><span class="n">INTERNAL_ERROR</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="cm">/*中略*/</span>
+<span class="p">}</span>
+</code></pre></div><p>これでコンパイラのベース部分は完成です。　今の段階で<code>-Xlist-phases</code>オプションをつけて自作コンパイラを動かしてみるとこんな感じになります。<code>-Xlist-phases</code>はコンパイラの全フェーズを表示する開発者向けのオプションです。
+ちゃんと今回作成したNoOp Phaseが表示されますね。</p>
+<!-- raw HTML omitted -->
+<h3 id="step4-ast">step4. Astを作成する</h3>
+<p>step4での変更点は<a href="https://github.com/youta1119/kotlin-toy-compiler/commit/17cc756b04ca381c9af98226cee68be22e7d1884">こちら</a></p>
+<p>コンパイラのベース部分ができたので、ソースコードからAstに生成する部分を作っていきます。
+Astとはコードをパースした抽象構文木のことでKotlinの場合はPsiという形式で表現されています。
+まずソースコードをパースしてAstに生成する<code>TopDownAnalyzerFacadeForDotNet</code>を作ります。</p>
+<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="c1">// TopDownAnalyzerFacadeForDotNet.kt
+</span><span class="c1"></span><span class="k">package</span> <span class="nn">com.github.youta1119.kotlin.compiler</span>
+
+<span class="k">import</span> <span class="nn">com.intellij.openapi.project.Project</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.analyzer.AnalysisResult</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.cli.common.config.KotlinSourceRoot</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.cli.jvm.compiler.createSourceFilesFromSourceRoots</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.config.*</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.context.ContextForNewModule</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.context.ModuleContext</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.context.ProjectContext</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.descriptors.impl.ModuleDescriptorImpl</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.name.Name</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.psi.KtFile</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.resolve.*</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.resolve.lazy.declarations.FileBasedDeclarationProviderFactory</span>
+<span class="k">import</span> <span class="nn">java.nio.file.Files</span>
+<span class="k">import</span> <span class="nn">java.nio.file.Paths</span>
+<span class="k">import</span> <span class="nn">kotlin.streams.toList</span>
+
+<span class="k">object</span> <span class="nc">TopDownAnalyzerFacadeForDotNet</span> <span class="p">{</span>
+
+    <span class="c1">// ソースコードからAstを生成する
+</span><span class="c1"></span>    <span class="n">@JvmStatic</span>
+    <span class="k">fun</span> <span class="nf">analyzeFiles</span><span class="p">(</span>
+        <span class="n">project</span><span class="p">:</span> <span class="n">Project</span><span class="p">,</span>
+        <span class="n">configuration</span><span class="p">:</span> <span class="n">CompilerConfiguration</span><span class="p">,</span>
+        <span class="n">files</span><span class="p">:</span> <span class="n">Collection</span><span class="p">&lt;</span><span class="n">KtFile</span><span class="p">&gt;</span>
+
+    <span class="p">)</span><span class="p">:</span> <span class="n">AnalysisResult</span> <span class="p">{</span>
+
+        <span class="k">val</span> <span class="py">projectContext</span> <span class="p">=</span> <span class="n">ProjectContext</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="s">&#34;TopDownAnalyzer for DotNet&#34;</span><span class="p">)</span>
+        <span class="k">val</span> <span class="py">builtIns</span> <span class="p">=</span> <span class="n">DotNetBuiltIns</span><span class="p">(</span><span class="n">projectContext</span><span class="p">.</span><span class="n">storageManager</span><span class="p">)</span>
+        <span class="c1">// &lt;main&gt;という名前のモジュールを作成
+</span><span class="c1"></span>        <span class="c1">// モジュールという単位でソースコードをパースしていく
+</span><span class="c1"></span>        <span class="k">val</span> <span class="py">context</span> <span class="p">=</span> <span class="n">ContextForNewModule</span><span class="p">(</span>
+            <span class="n">projectContext</span><span class="p">,</span>
+            <span class="n">Name</span><span class="p">.</span><span class="n">special</span><span class="p">(</span><span class="s">&#34;&lt;main&gt;&#34;</span><span class="p">)</span><span class="p">,</span>
+            <span class="n">builtIns</span><span class="p">,</span> <span class="k">null</span>
+        <span class="p">)</span>
+        <span class="k">val</span> <span class="py">module</span> <span class="p">=</span> <span class="n">context</span><span class="p">.</span><span class="n">module</span>
+        <span class="n">builtIns</span><span class="p">.</span><span class="n">builtInsModule</span> <span class="p">=</span> <span class="n">module</span>
+        <span class="n">context</span><span class="p">.</span><span class="n">setDependencies</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">analyzeFilesWithGivenTrace</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="n">BindingTraceContext</span><span class="p">(</span><span class="p">)</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span><span class="n">configuration</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="c1">// ソースコードからAstを変換する
+</span><span class="c1"></span>    <span class="k">private</span> <span class="k">fun</span> <span class="nf">analyzeFilesWithGivenTrace</span><span class="p">(</span>
+        <span class="n">files</span><span class="p">:</span> <span class="n">Collection</span><span class="p">&lt;</span><span class="n">KtFile</span><span class="p">&gt;</span><span class="p">,</span>
+        <span class="n">trace</span><span class="p">:</span> <span class="n">BindingTrace</span><span class="p">,</span>
+        <span class="n">moduleContext</span><span class="p">:</span> <span class="n">ModuleContext</span><span class="p">,</span>
+        <span class="n">configuration</span><span class="p">:</span> <span class="n">CompilerConfiguration</span>
+    <span class="p">)</span><span class="p">:</span> <span class="n">AnalysisResult</span> <span class="p">{</span>
+
+        <span class="c1">// we print out each file we compile for now
+</span><span class="c1"></span>        <span class="n">files</span><span class="p">.</span><span class="n">forEach</span> <span class="p">{</span> <span class="n">println</span><span class="p">(</span><span class="n">it</span><span class="p">)</span> <span class="p">}</span>
+        <span class="c1">// パーサインスタンス生成
+</span><span class="c1"></span>        <span class="k">val</span> <span class="py">analyzerForKonan</span> <span class="p">=</span> <span class="n">createTopDownAnalyzerForDotNet</span><span class="p">(</span>
+            <span class="n">moduleContext</span><span class="p">,</span> <span class="n">trace</span><span class="p">,</span>
+            <span class="n">FileBasedDeclarationProviderFactory</span><span class="p">(</span><span class="n">moduleContext</span><span class="p">.</span><span class="n">storageManager</span><span class="p">,</span> <span class="n">files</span><span class="p">)</span><span class="p">,</span>
+            <span class="n">configuration</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="n">CommonConfigurationKeys</span><span class="p">.</span><span class="n">LANGUAGE_VERSION_SETTINGS</span><span class="p">)</span><span class="o">!!</span>
+        <span class="p">)</span>
+        <span class="c1">// ソースコード-&gt;Astへの変換する
+</span><span class="c1"></span>        <span class="n">analyzerForKonan</span><span class="p">.</span><span class="n">analyzeDeclarations</span><span class="p">(</span><span class="n">TopDownAnalysisMode</span><span class="p">.</span><span class="n">TopLevelDeclarations</span><span class="p">,</span> <span class="n">files</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">AnalysisResult</span><span class="p">.</span><span class="n">success</span><span class="p">(</span><span class="n">trace</span><span class="p">.</span><span class="n">bindingContext</span><span class="p">,</span> <span class="n">moduleContext</span><span class="p">.</span><span class="n">module</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+
+<span class="c1">// DotNetPlatform.kt
+</span><span class="c1"></span><span class="c1">//よくわからないけど必要っぽい
+</span><span class="c1"></span><span class="k">package</span> <span class="nn">com.github.youta1119.kotlin.compiler</span>
+
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.builtins.KotlinBuiltIns</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.platform.TargetPlatform</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.platform.konan.KonanPlatform</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.platform.konan.KonanPlatforms</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.storage.StorageManager</span>
+
+<span class="k">class</span> <span class="nc">DotNetBuiltIns</span><span class="p">(</span><span class="n">storageManager</span><span class="p">:</span> <span class="n">StorageManager</span><span class="p">)</span> <span class="p">:</span> <span class="n">KotlinBuiltIns</span><span class="p">(</span><span class="n">storageManager</span><span class="p">)</span>
+
+<span class="n">@Suppress</span><span class="p">(</span><span class="s">&#34;DEPRECATION_ERROR&#34;</span><span class="p">)</span>
+<span class="k">object</span> <span class="nc">DotNetPlatform</span> <span class="p">{</span>
+
+    <span class="k">private</span> <span class="k">object</span> <span class="nc">DefaultSimpleDotNetPlatform</span> <span class="p">:</span> <span class="n">KonanPlatform</span><span class="p">(</span><span class="p">)</span>
+    <span class="n">@Deprecated</span><span class="p">(</span>
+        <span class="n">message</span> <span class="p">=</span> <span class="s">&#34;Should be accessed only by compatibility layer, other clients should use &#39;defaultDotNetPlatform&#39;&#34;</span><span class="p">,</span>
+        <span class="n">level</span> <span class="p">=</span> <span class="n">DeprecationLevel</span><span class="p">.</span><span class="n">ERROR</span>
+    <span class="p">)</span>
+    <span class="k">object</span> <span class="nc">CompatKonanPlatform</span> <span class="p">:</span> <span class="n">TargetPlatform</span><span class="p">(</span><span class="n">setOf</span><span class="p">(</span><span class="n">DefaultSimpleDotNetPlatform</span><span class="p">)</span><span class="p">)</span><span class="p">,</span>
+        <span class="n">org</span><span class="p">.</span><span class="n">jetbrains</span><span class="p">.</span><span class="n">kotlin</span><span class="p">.</span><span class="n">resolve</span><span class="p">.</span><span class="n">TargetPlatform</span> <span class="p">{</span>
+        <span class="k">override</span> <span class="k">val</span> <span class="py">platformName</span><span class="p">:</span> <span class="n">String</span>
+            <span class="k">get</span><span class="p">(</span><span class="p">)</span> <span class="p">=</span> <span class="s">&#34;DotNet&#34;</span>
+    <span class="p">}</span>
+
+    <span class="k">val</span> <span class="py">defaultDotNetPlatform</span><span class="p">:</span> <span class="n">TargetPlatform</span>
+        <span class="k">get</span><span class="p">(</span><span class="p">)</span> <span class="p">=</span> <span class="n">KonanPlatforms</span><span class="p">.</span><span class="n">CompatKonanPlatform</span>
+<span class="p">}</span>
+
+
+<span class="c1">// DotNetPlatformAnalyzerServices.kt
+</span><span class="c1"></span><span class="c1">//これもよくわからないけど必要っぽい
+</span><span class="c1"></span><span class="k">package</span> <span class="nn">com.github.youta1119.kotlin.compiler</span>
+
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.container.StorageComponentContainer</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.resolve.*</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.resolve.checkers.ExpectedActualDeclarationChecker</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.resolve.jvm.checkers.SuperCallWithDefaultArgumentsChecker</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.storage.StorageManager</span>
+
+
+<span class="k">object</span> <span class="nc">DotNetPlatformConfigurator</span> <span class="p">:</span> <span class="n">PlatformConfiguratorBase</span><span class="p">(</span>
+    <span class="n">additionalDeclarationCheckers</span> <span class="p">=</span> <span class="n">listOf</span><span class="p">(</span>
+        <span class="n">ExpectedActualDeclarationChecker</span><span class="p">(</span>
+            <span class="n">ModuleStructureOracle</span><span class="p">.</span><span class="n">SingleModule</span><span class="p">,</span>
+            <span class="n">emptyList</span><span class="p">(</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">)</span><span class="p">,</span>
+    <span class="n">additionalCallCheckers</span> <span class="p">=</span> <span class="n">listOf</span><span class="p">(</span><span class="n">SuperCallWithDefaultArgumentsChecker</span><span class="p">(</span><span class="p">)</span><span class="p">)</span>
+<span class="p">)</span> <span class="p">{</span>
+    <span class="k">override</span> <span class="k">fun</span> <span class="nf">configureModuleComponents</span><span class="p">(</span><span class="n">container</span><span class="p">:</span> <span class="n">StorageComponentContainer</span><span class="p">)</span> <span class="p">{</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">object</span> <span class="nc">DotNetPlatformAnalyzerServices</span> <span class="p">:</span> <span class="n">PlatformDependentAnalyzerServices</span><span class="p">(</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">override</span> <span class="k">val</span> <span class="py">platformConfigurator</span><span class="p">:</span> <span class="n">PlatformConfigurator</span> <span class="p">=</span>
+        <span class="n">DotNetPlatformConfigurator</span>
+
+    <span class="k">override</span> <span class="k">fun</span> <span class="nf">computePlatformSpecificDefaultImports</span><span class="p">(</span>
+        <span class="n">storageManager</span><span class="p">:</span> <span class="n">StorageManager</span><span class="p">,</span>
+        <span class="n">result</span><span class="p">:</span> <span class="n">MutableList</span><span class="p">&lt;</span><span class="n">ImportPath</span><span class="p">&gt;</span>
+    <span class="p">)</span> <span class="p">{</span>
+        <span class="c1">//no-op
+</span><span class="c1"></span>    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">//injection.kt
+</span><span class="c1"></span><span class="k">package</span> <span class="nn">com.github.youta1119.kotlin.compiler</span>
+
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.config.LanguageVersionSettings</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.container.*</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.context.ModuleContext</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.descriptors.impl.ModuleDescriptorImpl</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.frontend.di.configureModule</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.frontend.di.configureStandardResolveComponents</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.incremental.components.LookupTracker</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.resolve.*</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.resolve.lazy.FileScopeProviderImpl</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.resolve.lazy.KotlinCodeAnalyzer</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.resolve.lazy.ResolveSession</span>
+<span class="k">import</span> <span class="nn">org.jetbrains.kotlin.resolve.lazy.declarations.DeclarationProviderFactory</span>
+
+<span class="c1">// ソースコードのパーサインスタンス生成のためにDI設定
+</span><span class="c1"></span><span class="c1">// Kotlin/Nativeのコンパイラの実装を参考にしながら設定したらなんか動いた
+</span><span class="c1"></span><span class="k">fun</span> <span class="nf">createTopDownAnalyzerForDotNet</span><span class="p">(</span>
+    <span class="n">moduleContext</span><span class="p">:</span> <span class="n">ModuleContext</span><span class="p">,</span>
+    <span class="n">bindingTrace</span><span class="p">:</span> <span class="n">BindingTrace</span><span class="p">,</span>
+    <span class="n">declarationProviderFactory</span><span class="p">:</span> <span class="n">DeclarationProviderFactory</span><span class="p">,</span>
+    <span class="n">languageVersionSettings</span><span class="p">:</span> <span class="n">LanguageVersionSettings</span>
+<span class="p">)</span><span class="p">:</span> <span class="n">LazyTopDownAnalyzer</span> <span class="p">{</span>
+    <span class="k">val</span> <span class="py">storageComponentContainer</span> <span class="p">=</span> <span class="n">createContainer</span><span class="p">(</span><span class="s">&#34;TopDownAnalyzerForDotNet&#34;</span><span class="p">,</span> <span class="n">DotNetPlatformAnalyzerServices</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">configureModule</span><span class="p">(</span>
+            <span class="n">moduleContext</span><span class="p">,</span>
+            <span class="n">DotNetPlatform</span><span class="p">.</span><span class="n">defaultDotNetPlatform</span><span class="p">,</span>
+            <span class="n">DotNetPlatformAnalyzerServices</span><span class="p">,</span>
+            <span class="n">bindingTrace</span><span class="p">,</span>
+            <span class="n">languageVersionSettings</span>
+        <span class="p">)</span>
+        <span class="n">configureStandardResolveComponents</span><span class="p">(</span><span class="p">)</span>
+        <span class="n">useInstance</span><span class="p">(</span><span class="n">declarationProviderFactory</span><span class="p">)</span>
+        <span class="n">useImpl</span><span class="p">&lt;</span><span class="n">FileScopeProviderImpl</span><span class="p">&gt;</span><span class="p">(</span><span class="p">)</span>
+
+        <span class="n">CompilerEnvironment</span><span class="p">.</span><span class="n">configure</span><span class="p">(</span><span class="k">this</span><span class="p">)</span>
+
+        <span class="n">useInstance</span><span class="p">(</span><span class="n">LookupTracker</span><span class="p">.</span><span class="n">DO_NOTHING</span><span class="p">)</span>
+       <span class="c1">//useInstance(languageVersionSettings)
+</span><span class="c1"></span>    <span class="p">}</span><span class="p">.</span><span class="n">apply</span> <span class="p">{</span>
+        <span class="k">get</span><span class="p">&lt;</span><span class="n">ModuleDescriptorImpl</span><span class="p">&gt;</span><span class="p">(</span><span class="p">)</span><span class="p">.</span><span class="n">initialize</span><span class="p">(</span><span class="k">get</span><span class="p">&lt;</span><span class="n">KotlinCodeAnalyzer</span><span class="p">&gt;</span><span class="p">(</span><span class="p">)</span><span class="p">.</span><span class="n">packageFragmentProvider</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">storageComponentContainer</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="p">)</span>
+<span class="p">}</span>
+
+</code></pre></div><p>次にソースコードからAstを生成するFrontendフェーズを作成します。</p>
+<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">internal</span> <span class="k">val</span> <span class="py">frontendPhase</span> <span class="p">=</span> <span class="n">createUnitPhase</span><span class="p">(</span>
+    <span class="n">op</span> <span class="p">=</span> <span class="p">{</span>
+        <span class="k">val</span> <span class="py">environment</span> <span class="p">=</span> <span class="n">environment</span>
+        <span class="k">val</span> <span class="py">analyzerWithCompilerReport</span> <span class="p">=</span> <span class="n">AnalyzerWithCompilerReport</span><span class="p">(</span>
+            <span class="n">messageCollector</span><span class="p">,</span>
+            <span class="n">environment</span><span class="p">.</span><span class="n">configuration</span><span class="p">.</span><span class="n">languageVersionSettings</span>
+        <span class="p">)</span>
+        <span class="c1">// Astの生成
+</span><span class="c1"></span>        <span class="n">analyzerWithCompilerReport</span><span class="p">.</span><span class="n">analyzeAndReport</span><span class="p">(</span><span class="n">environment</span><span class="p">.</span><span class="n">getSourceFiles</span><span class="p">(</span><span class="p">)</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">TopDownAnalyzerFacadeForDotNet</span><span class="p">.</span><span class="n">analyzeFiles</span><span class="p">(</span>
+                <span class="n">environment</span><span class="p">.</span><span class="n">project</span><span class="p">,</span>
+                <span class="n">configuration</span><span class="p">,</span>
+                <span class="n">environment</span><span class="p">.</span><span class="n">getSourceFiles</span><span class="p">(</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">}</span>
+        <span class="c1">// ソースコードに構文エラーやimportのエラーがあった場合はここでエラーになる
+</span><span class="c1"></span>        <span class="k">if</span> <span class="p">(</span><span class="n">analyzerWithCompilerReport</span><span class="p">.</span><span class="n">hasErrors</span><span class="p">(</span><span class="p">)</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">throw</span> <span class="n">DotNetCompilationException</span><span class="p">(</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="c1">//Astの情報が入ってる
+</span><span class="c1"></span>        <span class="n">moduleDescriptor</span> <span class="p">=</span> <span class="n">analyzerWithCompilerReport</span><span class="p">.</span><span class="n">analysisResult</span><span class="p">.</span><span class="n">moduleDescriptor</span>
+        <span class="n">bindingContext</span> <span class="p">=</span> <span class="n">analyzerWithCompilerReport</span><span class="p">.</span><span class="n">analysisResult</span><span class="p">.</span><span class="n">bindingContext</span>
+    <span class="p">}</span><span class="p">,</span>
+    <span class="n">name</span> <span class="p">=</span> <span class="s">&#34;Frontend&#34;</span><span class="p">,</span>
+    <span class="n">description</span> <span class="p">=</span> <span class="s">&#34;Frontend builds Ast&#34;</span>
+<span class="p">)</span>
+
+</code></pre></div><p>これでいったんstep4は完了です。</p>
+<h3 id="step5-">step5. 標準ライブラリの定義</h3>
+<p>step5での変更点は<a href="https://github.com/youta1119/kotlin-toy-compiler/commit/e09831fe6b6ffe57c172fabe82333e072db791c0">こちら</a></p>
+<p>step4の状態で以下のようなソースコードをコンパイルしようとするとコンパイルエラーになってしまいます。</p>
+<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">fun</span> <span class="nf">main</span><span class="p">(</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">println</span><span class="p">(</span><span class="s">&#34;hello&#34;</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div><!-- raw HTML omitted -->
+<p>コンパイルエラーになるのは標準ライブラリが存在しないからです。
+なので、標準ライブラリを実装してやる必要があります。
+ただ、コンパイルエラーを消すだけなら標準ライブラリをすべて実装する必要はなく、クラス定義だけあればとりあえず動きます。<code>toString</code>みたいな実装しないといけないメソッドには<code>external</code>修飾子をつけておけば怒られなくなるのでとりあえずつけておきます。</p>
+<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="c1">//Array.kt
+</span><span class="c1"></span><span class="k">package</span> <span class="nn">kotlin</span>
+<span class="c1">// ArrayというクラスさえあればOK
+</span><span class="c1"></span><span class="k">public</span> <span class="k">final</span> <span class="k">class</span> <span class="nc">Array</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="p">{</span>
+<span class="p">}</span> 
+<span class="c1">// Any.kt
+</span><span class="c1"></span><span class="k">package</span> <span class="nn">kotlin</span>
+
+<span class="k">public</span> <span class="k">open</span> <span class="k">class</span> <span class="nc">Any</span> <span class="p">{</span>
+    <span class="c1">// external修飾子をつけると実装してなくても怒られない
+</span><span class="c1"></span>    <span class="k">external</span> <span class="k">public</span> <span class="k">open</span> <span class="k">operator</span> <span class="k">fun</span> <span class="nf">equals</span><span class="p">(</span><span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">?</span><span class="p">)</span><span class="p">:</span> <span class="n">Boolean</span>
+    <span class="c1">//external public open fun hashCode(): Int
+</span><span class="c1"></span>    <span class="k">external</span> <span class="k">open</span> <span class="k">fun</span> <span class="nf">toString</span><span class="p">(</span><span class="p">)</span><span class="p">:</span> <span class="n">String</span>
+<span class="p">}</span> 
+</code></pre></div><p>標準ライブラリの定義が終わったら<code>TopDownAnalyzerFacadeForDotNet</code>でAstを生成する際に標準ライブラリも一緒に含めるように修正します。</p>
+<div class="highlight"><pre class="chroma"><code class="language-Kotlin" data-lang="Kotlin"><span class="k">object</span> <span class="nc">TopDownAnalyzerFacadeForDotNet</span> <span class="p">{</span>
+
+    <span class="c1">// ソースコードからAstを生成する
+</span><span class="c1"></span>    <span class="n">@JvmStatic</span>
+    <span class="k">fun</span> <span class="nf">analyzeFiles</span><span class="p">(</span>
+        <span class="n">project</span><span class="p">:</span> <span class="n">Project</span><span class="p">,</span>
+        <span class="n">configuration</span><span class="p">:</span> <span class="n">CompilerConfiguration</span><span class="p">,</span>
+        <span class="n">files</span><span class="p">:</span> <span class="n">Collection</span><span class="p">&lt;</span><span class="n">KtFile</span><span class="p">&gt;</span>
+
+    <span class="p">)</span><span class="p">:</span> <span class="n">AnalysisResult</span> <span class="p">{</span>
+
+        <span class="k">val</span> <span class="py">projectContext</span> <span class="p">=</span> <span class="n">ProjectContext</span><span class="p">(</span><span class="n">project</span><span class="p">,</span> <span class="s">&#34;TopDownAnalyzer for DotNet&#34;</span><span class="p">)</span>
+        <span class="k">val</span> <span class="py">builtIns</span> <span class="p">=</span> <span class="n">DotNetBuiltIns</span><span class="p">(</span><span class="n">projectContext</span><span class="p">.</span><span class="n">storageManager</span><span class="p">)</span>
+        <span class="c1">// &lt;main&gt;という名前のモジュールを作成
+</span><span class="c1"></span>        <span class="c1">// モジュールという単位でソースコードをパースしていく
+</span><span class="c1"></span>        <span class="k">val</span> <span class="py">context</span> <span class="p">=</span> <span class="n">ContextForNewModule</span><span class="p">(</span>
+            <span class="n">projectContext</span><span class="p">,</span>
+            <span class="n">Name</span><span class="p">.</span><span class="n">special</span><span class="p">(</span><span class="s">&#34;&lt;main&gt;&#34;</span><span class="p">)</span><span class="p">,</span>
+            <span class="n">builtIns</span><span class="p">,</span> <span class="k">null</span>
+        <span class="p">)</span>
+        <span class="k">val</span> <span class="py">module</span> <span class="p">=</span> <span class="n">context</span><span class="p">.</span><span class="n">module</span>
+        <span class="n">builtIns</span><span class="p">.</span><span class="n">builtInsModule</span> <span class="p">=</span> <span class="n">module</span>
+        <span class="c1">//修正
+</span><span class="c1"></span>        <span class="n">context</span><span class="p">.</span><span class="n">setDependencies</span><span class="p">(</span><span class="n">listOf</span><span class="p">(</span><span class="n">module</span><span class="p">)</span> <span class="p">+</span> <span class="n">loadStdlibModules</span><span class="p">(</span><span class="n">projectContext</span><span class="p">,</span> <span class="n">configuration</span><span class="p">)</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">analyzeFilesWithGivenTrace</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="n">BindingTraceContext</span><span class="p">(</span><span class="p">)</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span><span class="n">configuration</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="cm">/*中略*/</span>
+    <span class="c1">//追加
+</span><span class="c1"></span>    <span class="c1">//標準ライブラリの読み込み
+</span><span class="c1"></span>    <span class="k">private</span> <span class="k">fun</span> <span class="nf">loadStdlibModules</span><span class="p">(</span>
+        <span class="n">projectContext</span><span class="p">:</span> <span class="n">ProjectContext</span><span class="p">,</span>
+        <span class="n">configuration</span><span class="p">:</span> <span class="n">CompilerConfiguration</span>
+    <span class="p">)</span><span class="p">:</span> <span class="n">ModuleDescriptorImpl</span> <span class="p">{</span>
+        <span class="k">val</span> <span class="py">stdlibFiles</span> <span class="p">=</span> <span class="n">Files</span><span class="p">.</span><span class="n">walk</span><span class="p">(</span><span class="n">Paths</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="n">Distribution</span><span class="p">.</span><span class="n">stdlibDir</span><span class="p">)</span><span class="p">)</span>
+            <span class="p">.</span><span class="n">filter</span> <span class="p">{</span> <span class="n">it</span><span class="p">.</span><span class="n">toFile</span><span class="p">(</span><span class="p">)</span><span class="p">.</span><span class="n">extension</span> <span class="p">=</span><span class="p">=</span> <span class="s">&#34;kt&#34;</span> <span class="p">}</span>
+            <span class="p">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">KotlinSourceRoot</span><span class="p">(</span><span class="n">it</span><span class="p">.</span><span class="n">toString</span><span class="p">(</span><span class="p">)</span><span class="p">,</span> <span class="k">false</span><span class="p">)</span> <span class="p">}</span><span class="p">.</span><span class="n">toList</span><span class="p">(</span><span class="p">)</span>
+        <span class="k">val</span> <span class="py">ktFiles</span> <span class="p">=</span> <span class="n">createSourceFilesFromSourceRoots</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">projectContext</span><span class="p">.</span><span class="n">project</span><span class="p">,</span> <span class="n">stdlibFiles</span><span class="p">)</span>
+        <span class="k">val</span> <span class="py">builtIns</span> <span class="p">=</span> <span class="n">DotNetBuiltIns</span><span class="p">(</span><span class="n">projectContext</span><span class="p">.</span><span class="n">storageManager</span><span class="p">)</span>
+        <span class="c1">// &lt;stdlib&gt;モジュールとして標準ライブラリを読み込み
+</span><span class="c1"></span>        <span class="k">val</span> <span class="py">context</span> <span class="p">=</span> <span class="n">ContextForNewModule</span><span class="p">(</span>
+            <span class="n">projectContext</span><span class="p">,</span>
+            <span class="n">STDLIB_MODULE_NAME</span><span class="p">,</span>
+            <span class="n">builtIns</span><span class="p">,</span> <span class="k">null</span>
+        <span class="p">)</span>
+        <span class="k">val</span> <span class="py">module</span> <span class="p">=</span> <span class="n">context</span><span class="p">.</span><span class="n">module</span>
+        <span class="n">builtIns</span><span class="p">.</span><span class="n">builtInsModule</span> <span class="p">=</span> <span class="n">module</span>
+        <span class="n">context</span><span class="p">.</span><span class="n">setDependencies</span><span class="p">(</span><span class="n">module</span><span class="p">)</span>
+        <span class="k">val</span> <span class="py">analyzerForKonan</span> <span class="p">=</span> <span class="n">createTopDownAnalyzerForDotNet</span><span class="p">(</span>
+            <span class="n">context</span><span class="p">,</span> <span class="n">BindingTraceContext</span><span class="p">(</span><span class="p">)</span><span class="p">,</span>
+            <span class="n">FileBasedDeclarationProviderFactory</span><span class="p">(</span><span class="n">context</span><span class="p">.</span><span class="n">storageManager</span><span class="p">,</span> <span class="n">ktFiles</span><span class="p">)</span><span class="p">,</span>
+            <span class="n">configuration</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="n">CommonConfigurationKeys</span><span class="p">.</span><span class="n">LANGUAGE_VERSION_SETTINGS</span><span class="p">)</span><span class="o">!!</span>
+        <span class="p">)</span>
+
+        <span class="n">analyzerForKonan</span><span class="p">.</span><span class="n">analyzeDeclarations</span><span class="p">(</span><span class="n">TopDownAnalysisMode</span><span class="p">.</span><span class="n">TopLevelDeclarations</span><span class="p">,</span> <span class="n">ktFiles</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">context</span><span class="p">.</span><span class="n">module</span>
+
+    <span class="p">}</span>
+
+    <span class="k">private</span> <span class="k">val</span> <span class="py">STDLIB_MODULE_NAME</span> <span class="p">=</span> <span class="n">Name</span><span class="p">.</span><span class="n">special</span><span class="p">(</span><span class="s">&#34;&lt;stdlib&gt;&#34;</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div><h3 id="step6-astkotlin-ir">step6. AstとKotlin IRに変換する</h3>
+<p>step6での変更点は<a href="13623195b03f5ab03638e81c22330ea164ea4a68">こちら</a></p>
+<p>ソースコードをパースしてAst(Psi)に変換することができたので、次はAstをIR(中間表現)に変換するPsiToIrフェーズを作っていきます。ついでに変換したIRを見るためにDumpIrフェーズを作ります。</p>
+<p>Astには<code>=,-,+,/</code>などの余分な構文情報を含んでいるため、余分な構文情報を取り除いて抽象度を上げるため、AstをIR(中間表現)に変換します。IR(中間表現)はASTから余分な構文情報を取り除いて抽象度を上げたものです。</p>
+<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="c1">//CompilerPhases.kt
+</span><span class="c1"></span><span class="c1">// PsiをIRに変換するフェーズ
+</span><span class="c1"></span><span class="k">internal</span> <span class="k">val</span> <span class="py">psiToIrPhase</span> <span class="p">=</span> <span class="n">createUnitPhase</span><span class="p">(</span>
+    <span class="n">op</span> <span class="p">=</span> <span class="p">{</span>
+        <span class="c1">// Psi2IrTranslatorを使うとPsiとIRに変換できるっぽい
+</span><span class="c1"></span>        <span class="c1">// 動いているが、Kotlinコンパイラのソースをコピペしたのでよくわからない
+</span><span class="c1"></span>        <span class="k">val</span> <span class="py">translator</span> <span class="p">=</span> <span class="n">Psi2IrTranslator</span><span class="p">(</span><span class="n">environment</span><span class="p">.</span><span class="n">configuration</span><span class="p">.</span><span class="n">languageVersionSettings</span><span class="p">,</span> <span class="n">Psi2IrConfiguration</span><span class="p">(</span><span class="k">false</span><span class="p">)</span><span class="p">)</span>
+        <span class="k">val</span> <span class="py">symbolTable</span> <span class="p">=</span> <span class="n">SymbolTable</span><span class="p">(</span><span class="p">)</span>
+        <span class="k">val</span> <span class="py">generatorContext</span> <span class="p">=</span> <span class="n">translator</span><span class="p">.</span><span class="n">createGeneratorContext</span><span class="p">(</span>
+            <span class="n">moduleDescriptor</span><span class="p">,</span>
+            <span class="n">bindingContext</span><span class="p">,</span>
+            <span class="n">symbolTable</span><span class="p">,</span>
+            <span class="n">GeneratorExtensions</span><span class="p">(</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="c1">// PsiをIRに変換
+</span><span class="c1"></span>        <span class="k">val</span> <span class="py">module</span> <span class="p">=</span> <span class="n">translator</span><span class="p">.</span><span class="n">generateModuleFragment</span><span class="p">(</span><span class="n">generatorContext</span><span class="p">,</span> <span class="n">environment</span><span class="p">.</span><span class="n">getSourceFiles</span><span class="p">(</span><span class="p">)</span><span class="p">)</span>
+        <span class="n">irModule</span> <span class="p">=</span> <span class="n">module</span>
+    <span class="p">}</span><span class="p">,</span>
+    <span class="n">name</span> <span class="p">=</span> <span class="s">&#34;Psi2Ir&#34;</span><span class="p">,</span>
+    <span class="n">description</span> <span class="p">=</span> <span class="s">&#34;Psi to IR conversion&#34;</span>
+<span class="p">)</span>
+
+<span class="c1">// IRをdumpするフェーズ
+</span><span class="c1"></span><span class="k">internal</span> <span class="k">val</span> <span class="py">dumpIrPhase</span> <span class="p">=</span> <span class="n">createUnitPhase</span><span class="p">(</span>
+    <span class="n">op</span> <span class="p">=</span> <span class="p">{</span>
+       <span class="n">println</span><span class="p">(</span><span class="n">irModule</span><span class="p">.</span><span class="n">dump</span><span class="p">(</span><span class="p">)</span><span class="p">)</span>
+    <span class="p">}</span><span class="p">,</span>
+    <span class="n">name</span> <span class="p">=</span> <span class="s">&#34;DumpIr&#34;</span><span class="p">,</span>
+    <span class="n">description</span> <span class="p">=</span> <span class="s">&#34;dump ir&#34;</span>
+<span class="p">)</span>
+</code></pre></div><p>これでAstとKotlin IRに変換する部分は完成です。この状態で自作コンパイラを実行すると以下のような感じで変換されてIRが表示されます。</p>
+<!-- raw HTML omitted -->
+<h3 id="step7-kotlin-irnet-bytecode">step7. Kotlin IRを.Net ByteCodeに変換する</h3>
+<p>IRを生成することができたのでIRの情報を使って.Netアセンブリを生成するIrToDotNetAsmフェーズと.Netアセンブリとexeに変換するGenerateByteCodeフェーズを作っていきます。</p>
+<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">internal</span> <span class="k">val</span> <span class="py">irToCILPhase</span> <span class="p">=</span> <span class="n">createUnitPhase</span><span class="p">(</span>
+    <span class="n">op</span> <span class="p">=</span> <span class="p">{</span>
+        <span class="c1">// IRの情報を使って.Netアセンブリ生成
+</span><span class="c1"></span>        <span class="k">val</span> <span class="py">pw</span> <span class="p">=</span> <span class="n">File</span><span class="p">(</span><span class="n">tempFileName</span><span class="p">)</span><span class="p">.</span><span class="n">printWriter</span><span class="p">(</span><span class="p">)</span>
+        <span class="n">pw</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">&#34;.assembly extern mscorlib {}&#34;</span><span class="p">)</span>
+        <span class="n">pw</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">&#34;.assembly main {}&#34;</span><span class="p">)</span>
+        <span class="n">irModule</span><span class="p">.</span><span class="n">acceptChildrenVoid</span><span class="p">(</span><span class="k">object</span> <span class="err">:</span><span class="err"> </span><span class="nc">IrElementVisitorVoid</span> <span class="p">{</span>
+            <span class="k">override</span> <span class="k">fun</span> <span class="nf">visitElement</span><span class="p">(</span><span class="n">element</span><span class="p">:</span> <span class="n">IrElement</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">element</span><span class="p">.</span><span class="n">acceptChildrenVoid</span><span class="p">(</span><span class="k">this</span><span class="p">)</span>
+            <span class="p">}</span>
+
+            <span class="k">override</span> <span class="k">fun</span> <span class="nf">visitFunction</span><span class="p">(</span><span class="n">declaration</span><span class="p">:</span> <span class="n">IrFunction</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">assert</span><span class="p">(</span><span class="n">declaration</span><span class="p">.</span><span class="n">name</span><span class="p">.</span><span class="n">asString</span><span class="p">(</span><span class="p">)</span> <span class="p">=</span><span class="p">=</span> <span class="s">&#34;main&#34;</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="s">&#34;this is toy compiler. only main function can be compiled.&#34;</span>
+                <span class="p">}</span>
+                <span class="n">pw</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">&#34;.method static void Main() cil managed {&#34;</span><span class="p">)</span>
+                <span class="n">pw</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">&#34;.entrypoint&#34;</span><span class="p">)</span>
+                <span class="k">val</span> <span class="py">body</span> <span class="p">=</span> <span class="n">declaration</span><span class="p">.</span><span class="n">body</span><span class="o">!!</span> <span class="k">as</span> <span class="n">IrBlockBody</span>
+                <span class="n">body</span><span class="p">.</span><span class="n">statements</span><span class="p">.</span><span class="n">forEach</span> <span class="p">{</span> <span class="n">statement</span> <span class="p">-</span><span class="p">&gt;</span>
+                    <span class="k">val</span> <span class="py">callExpr</span> <span class="p">=</span> <span class="n">statement</span> <span class="k">as</span> <span class="n">IrCall</span>
+                    <span class="k">val</span> <span class="py">calleeFunctionExpr</span> <span class="p">=</span> <span class="n">callExpr</span><span class="p">.</span><span class="n">symbol</span><span class="p">.</span><span class="n">owner</span><span class="p">.</span><span class="n">target</span>
+                    <span class="n">assert</span><span class="p">(</span><span class="n">calleeFunctionExpr</span><span class="p">.</span><span class="n">fqNameForIrSerialization</span><span class="p">.</span><span class="n">asString</span><span class="p">(</span><span class="p">)</span> <span class="p">=</span><span class="p">=</span> <span class="s">&#34;kotlin.io.println&#34;</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="s">&#34;this is toy compiler. only kotlin.io.println function can be called.&#34;</span>
+                    <span class="p">}</span>
+
+
+                    <span class="k">val</span> <span class="py">args</span> <span class="p">=</span> <span class="p">(</span><span class="n">callExpr</span> <span class="k">as</span> <span class="n">IrMemberAccessExpression</span><span class="p">)</span><span class="p">.</span><span class="n">getArguments</span><span class="p">(</span><span class="p">)</span>
+                    <span class="n">args</span><span class="p">.</span><span class="n">forEach</span> <span class="p">{</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">expr</span><span class="p">)</span> <span class="p">-</span><span class="p">&gt;</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">expr</span> <span class="k">is</span> <span class="n">IrConst</span><span class="p">&lt;</span><span class="p">*</span><span class="p">&gt;</span><span class="p">)</span> <span class="p">{</span>
+                            <span class="n">pw</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">&#34;ldstr \&#34;${expr.value}\&#34;&#34;</span><span class="p">)</span>
+                        <span class="p">}</span>
+                    <span class="p">}</span>
+                    <span class="c1">//println関数の呼び出しを.NetのSystem.Console::WriteLine関数呼び出しに変換
+</span><span class="c1"></span>                    <span class="n">pw</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">&#34;call void [mscorlib]System.Console::WriteLine(string)&#34;</span><span class="p">)</span>
+                <span class="p">}</span>
+                <span class="n">pw</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">&#34;ret&#34;</span><span class="p">)</span>
+                <span class="n">pw</span><span class="p">.</span><span class="n">println</span><span class="p">(</span><span class="s">&#34;}&#34;</span><span class="p">)</span>
+            <span class="p">}</span>
+        <span class="p">}</span><span class="p">)</span>
+        <span class="n">pw</span><span class="p">.</span><span class="n">close</span><span class="p">(</span><span class="p">)</span>
+    <span class="p">}</span><span class="p">,</span>
+    <span class="n">name</span> <span class="p">=</span> <span class="s">&#34;IrToDotNetAsm&#34;</span><span class="p">,</span>
+    <span class="n">description</span> <span class="p">=</span> <span class="s">&#34;IR to .Net assembly conversion&#34;</span>
+<span class="p">)</span>
+
+<span class="k">internal</span> <span class="k">val</span> <span class="py">generateBytecodePhase</span> <span class="p">=</span> <span class="n">createUnitPhase</span><span class="p">(</span>
+    <span class="n">op</span> <span class="p">=</span> <span class="p">{</span>
+        <span class="c1">// ilasmコマンドを実行してアセンブリをexeに変換
+</span><span class="c1"></span>        <span class="k">val</span> <span class="py">command</span> <span class="p">=</span> <span class="n">listOf</span><span class="p">(</span><span class="s">&#34;ilasm&#34;</span><span class="p">)</span> <span class="p">+</span> <span class="n">listOf</span><span class="p">(</span><span class="s">&#34;/output:${outputFileName}&#34;</span><span class="p">,</span> <span class="n">tempFileName</span><span class="p">)</span>
+        <span class="k">val</span> <span class="py">builder</span> <span class="p">=</span> <span class="n">ProcessBuilder</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+
+        <span class="n">builder</span><span class="p">.</span><span class="n">redirectOutput</span><span class="p">(</span><span class="n">ProcessBuilder</span><span class="p">.</span><span class="n">Redirect</span><span class="p">.</span><span class="n">INHERIT</span><span class="p">)</span>
+        <span class="n">builder</span><span class="p">.</span><span class="n">redirectInput</span><span class="p">(</span><span class="n">ProcessBuilder</span><span class="p">.</span><span class="n">Redirect</span><span class="p">.</span><span class="n">INHERIT</span><span class="p">)</span>
+        <span class="n">builder</span><span class="p">.</span><span class="n">redirectError</span><span class="p">(</span><span class="n">ProcessBuilder</span><span class="p">.</span><span class="n">Redirect</span><span class="p">.</span><span class="n">INHERIT</span><span class="p">)</span>
+
+        <span class="k">val</span> <span class="py">process</span> <span class="p">=</span> <span class="n">builder</span><span class="p">.</span><span class="n">start</span><span class="p">(</span><span class="p">)</span>
+        <span class="k">val</span> <span class="py">exitCode</span> <span class="p">=</span> <span class="n">process</span><span class="p">.</span><span class="n">waitFor</span><span class="p">(</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">exitCode</span> <span class="p">!</span><span class="p">=</span> <span class="m">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">throw</span> <span class="n">DotNetCompilationException</span><span class="p">(</span><span class="s">&#34;ilasm command returned non-zero exit code: $exitCode.&#34;</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span><span class="p">,</span>
+    <span class="n">name</span> <span class="p">=</span> <span class="s">&#34;GenerateByteCode&#34;</span><span class="p">,</span>
+    <span class="n">description</span> <span class="p">=</span> <span class="s">&#34;Generate .Net Bytecode from .Net assembly&#34;</span>
+<span class="p">)</span>
+</code></pre></div><p>これでKotlinのプログラムを.Netのexeに変換するコンパイラの完成です。</p>
+<!-- raw HTML omitted -->
+<p>.Netアセンブリの解説はまた今度追記します。</p>
+<h2 id="heading-2">終わりに</h2>
+<p>Kotlinではソースコードのパーサーはライブラリ形式で配布されているため比較的少ないコード量でコンパイラを作ることができます。ちなみにこのコンパイラのコード量は570行でした
+しかし、Kotlinコンパイラを自作したい物好きな人はあまり居ないのかKotlinコンパイラに関するドキュメントは存在せず、色々ハマったのでこの記事を書きました。</p>
+<p>理論上は今回解説したやり方で、コンパイラを書けばどの環境でもKotlinを動かすことができます。
+この記事を読んで自作Kotlinコンパイラに興味をもってくださった方がいれば幸いです。</p>
+
+        
+          <div class="blog-tags">
+            
+              <a href="https://youta1119.github.io/tags/kotlin/">kotlin</a>&nbsp;
+            
+          </div>
+        
+
+        
+            <hr/>
+            <section id="social-share">
+              <div class="list-inline footer-links">
+                
+
+<div class="share-box" aria-hidden="true">
+    <ul class="share">
+      
+      <li>
+        <a href="//twitter.com/share?url=https%3a%2f%2fyouta1119.github.io%2fpost%2f2019%2f12%2f14%2fhow-to-create-own-kotlin-compiler%2f&amp;text=%e8%87%aa%e4%bd%9cKotlin%e3%82%b3%e3%83%b3%e3%83%91%e3%82%a4%e3%83%a9%e3%81%ae%e4%bd%9c%e3%82%8a%e6%96%b9&amp;via=youta1119" target="_blank" title="Share on Twitter">
+          <i class="fab fa-twitter"></i>
+        </a>
+      </li>
+  
+      
+      <li>
+        <a href="//www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fyouta1119.github.io%2fpost%2f2019%2f12%2f14%2fhow-to-create-own-kotlin-compiler%2f" target="_blank" title="Share on Facebook">
+          <i class="fab fa-facebook"></i>
+        </a>
+      </li>
+  
+      
+      <li>
+        <a href="//reddit.com/submit?url=https%3a%2f%2fyouta1119.github.io%2fpost%2f2019%2f12%2f14%2fhow-to-create-own-kotlin-compiler%2f&amp;title=%e8%87%aa%e4%bd%9cKotlin%e3%82%b3%e3%83%b3%e3%83%91%e3%82%a4%e3%83%a9%e3%81%ae%e4%bd%9c%e3%82%8a%e6%96%b9" target="_blank" title="Share on Reddit">
+          <i class="fab fa-reddit"></i>
+        </a>
+      </li>
+  
+      
+      <li>
+        <a href="//www.linkedin.com/shareArticle?url=https%3a%2f%2fyouta1119.github.io%2fpost%2f2019%2f12%2f14%2fhow-to-create-own-kotlin-compiler%2f&amp;title=%e8%87%aa%e4%bd%9cKotlin%e3%82%b3%e3%83%b3%e3%83%91%e3%82%a4%e3%83%a9%e3%81%ae%e4%bd%9c%e3%82%8a%e6%96%b9" target="_blank" title="Share on LinkedIn">
+          <i class="fab fa-linkedin"></i>
+        </a>
+      </li>
+  
+      
+      <li>
+        <a href="//www.stumbleupon.com/submit?url=https%3a%2f%2fyouta1119.github.io%2fpost%2f2019%2f12%2f14%2fhow-to-create-own-kotlin-compiler%2f&amp;title=%e8%87%aa%e4%bd%9cKotlin%e3%82%b3%e3%83%b3%e3%83%91%e3%82%a4%e3%83%a9%e3%81%ae%e4%bd%9c%e3%82%8a%e6%96%b9" target="_blank" title="Share on StumbleUpon">
+          <i class="fab fa-stumbleupon"></i>
+        </a>
+      </li>
+  
+      
+      <li>
+        <a href="//www.pinterest.com/pin/create/button/?url=https%3a%2f%2fyouta1119.github.io%2fpost%2f2019%2f12%2f14%2fhow-to-create-own-kotlin-compiler%2f&amp;description=%e8%87%aa%e4%bd%9cKotlin%e3%82%b3%e3%83%b3%e3%83%91%e3%82%a4%e3%83%a9%e3%81%ae%e4%bd%9c%e3%82%8a%e6%96%b9" target="_blank" title="Share on Pinterest">
+          <i class="fab fa-pinterest"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+  
+
+              </div>
+            </section>
+        
+
+        
+          
+            
+          
+
+          
+                  <h4 class="see-also">See also</h4>
+                  <ul>
+                
+                
+                    <li><a href="/post/2019/06/10/kotlin-fest-2019-cfp/">「Kotlin/Nativeはなぜ動くのか？」というタイトルでKotlin FestのCfpに応募した</a></li>
+                
+                    <li><a href="/post/2018/12/24/about-kotlin-native-stdlib/">Kotlin/Nativeの標準ライブラリの実装を追いかける</a></li>
+                
+              </ul>
+
+          
+        
+      </article>
+
+      
+        <ul class="pager blog-pager">
+          
+            <li class="previous">
+              <a href="https://youta1119.github.io/post/2019/06/10/kotlin-fest-2019-cfp/" data-toggle="tooltip" data-placement="top" title="「Kotlin/Nativeはなぜ動くのか？」というタイトルでKotlin FestのCfpに応募した">&larr; Previous Post</a>
+            </li>
+          
+          
+        </ul>
+      
+
+
+      
+        
+          
+          <div class="disqus-comments">                  
+            <button id="show-comments" class="btn btn-default" type="button">Show <span class="disqus-comment-count" data-disqus-url="https://youta1119.github.io/post/2019/12/14/how-to-create-own-kotlin-compiler">comments</span></button>
+            <div id="disqus_thread"></div>
+
+            <script type="text/javascript">
+              var disqus_config = function () {
+              this.page.url = 'https:\/\/youta1119.github.io\/post\/2019\/12\/14\/how-to-create-own-kotlin-compiler';
+            };
+
+          </script>
+          </div>
+          
+        
+        
+      
+
+    </div>
+  </div>
+</div>
+
+      
+<footer>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        <ul class="list-inline text-center footer-links">
+          
+              <li>
+                <a href="mailto:dev.youta1119@gmail.com" title="Email me">
+                  <span class="fa-stack fa-lg">
+                    <i class="fas fa-circle fa-stack-2x"></i>
+                    <i class="fas fa-envelope fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a href="https://github.com/youta1119" title="GitHub">
+                  <span class="fa-stack fa-lg">
+                    <i class="fas fa-circle fa-stack-2x"></i>
+                    <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li>
+                <a href="https://twitter.com/youta1119" title="Twitter">
+                  <span class="fa-stack fa-lg">
+                    <i class="fas fa-circle fa-stack-2x"></i>
+                    <i class="fab fa-twitter fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+          
+          <li>
+            <a href="" title="RSS">
+              <span class="fa-stack fa-lg">
+                <i class="fas fa-circle fa-stack-2x"></i>
+                <i class="fas fa-rss fa-stack-1x fa-inverse"></i>
+              </span>
+            </a>
+          </li>
+          
+        </ul>
+        <p class="credits copyright text-muted">
+          
+            
+              yota ogino
+            
+          
+
+          &nbsp;&bull;&nbsp;&copy;
+          
+            2019
+          
+
+          
+            &nbsp;&bull;&nbsp;
+            <a href="https://youta1119.github.io">youta1119&#39;s blog</a>
+          
+        </p>
+        
+        <p class="credits theme-by text-muted">
+          <a href="https://gohugo.io">Hugo v0.61.0</a> powered &nbsp;&bull;&nbsp; Theme <a href="https://github.com/halogenica/beautifulhugo">Beautiful Hugo</a> adapted from <a href="https://deanattali.com/beautiful-jekyll/">Beautiful Jekyll</a>
+          
+        </p>
+      </div>
+    </div>
+  </div>
+</footer><script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+<script src="https://youta1119.github.io/js/main.js"></script>
+<script src="https://youta1119.github.io/js/highlight.min.js"></script>
+<script> hljs.initHighlightingOnLoad(); </script>
+<script> $(document).ready(function() {$("pre.chroma").css("padding","0");}); </script><script> renderMathInElement(document.body); </script><script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.js" integrity="sha384-QELNnmcmU8IR9ZAykt67vGr9/rZJdHbiWi64V88fCPaOohUlHCqUD/unNN0BXSqy" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe-ui-default.min.js" integrity="sha384-m67o7SkQ1ALzKZIFh4CiTA8tmadaujiTa9Vu+nqPSwDOqHrDmxLezTdFln8077+q" crossorigin="anonymous"></script><script src="https://youta1119.github.io/js/load-photoswipe.js"></script>
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+$(function(){
+  $('#show-comments').on('click', function(){
+    var disqus_shortname = 'youta1119-github';
+      
+    (function() {
+      var disqus = document.createElement('script'); 
+      disqus.type = 'text/javascript'; 
+      disqus.async = true;
+      disqus.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(disqus);
+    })();
+      
+    $(this).hide(); 
+    });
+  });
+      
+</script>
+<script id="dsq-count-scr" src="//youta1119-github.disqus.com/count.js" async></script>
+
+
+
+
+    
+  </body>
+</html>
+

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on youta1119&#39;s blog</title>
@@ -7,31 +7,31 @@
     <generator>Hugo -- gohugo.io</generator>
     <managingEditor>dev.youta1119@gmail.com (yota ogino)</managingEditor>
     <webMaster>dev.youta1119@gmail.com (yota ogino)</webMaster>
-    <lastBuildDate>Mon, 10 Jun 2019 01:08:16 +0900</lastBuildDate>
+    <lastBuildDate>Sat, 14 Dec 2019 21:00:11 +0900</lastBuildDate>
     
 	<atom:link href="https://youta1119.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Kotlin</title>
+      <title>kotlin</title>
       <link>https://youta1119.github.io/tags/kotlin/</link>
-      <pubDate>Mon, 10 Jun 2019 01:08:16 +0900</pubDate>
+      <pubDate>Sat, 14 Dec 2019 21:00:11 +0900</pubDate>
       <author>dev.youta1119@gmail.com (yota ogino)</author>
       <guid>https://youta1119.github.io/tags/kotlin/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Kotlin/Native</title>
-      <link>https://youta1119.github.io/tags/kotlin-native/</link>
+      <title>kotlin/native</title>
+      <link>https://youta1119.github.io/tags/kotlin/native/</link>
       <pubDate>Mon, 10 Jun 2019 01:08:16 +0900</pubDate>
       <author>dev.youta1119@gmail.com (yota ogino)</author>
-      <guid>https://youta1119.github.io/tags/kotlin-native/</guid>
+      <guid>https://youta1119.github.io/tags/kotlin/native/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Rust</title>
+      <title>rust</title>
       <link>https://youta1119.github.io/tags/rust/</link>
       <pubDate>Sun, 23 Dec 2018 00:00:00 +0000</pubDate>
       <author>dev.youta1119@gmail.com (yota ogino)</author>
@@ -40,7 +40,7 @@
     </item>
     
     <item>
-      <title>Xv6 Rs</title>
+      <title>xv6-rs</title>
       <link>https://youta1119.github.io/tags/xv6-rs/</link>
       <pubDate>Sun, 23 Dec 2018 00:00:00 +0000</pubDate>
       <author>dev.youta1119@gmail.com (yota ogino)</author>
@@ -49,7 +49,7 @@
     </item>
     
     <item>
-      <title>自作os</title>
+      <title>自作OS</title>
       <link>https://youta1119.github.io/tags/%E8%87%AA%E4%BD%9Cos/</link>
       <pubDate>Sun, 23 Dec 2018 00:00:00 +0000</pubDate>
       <author>dev.youta1119@gmail.com (yota ogino)</author>

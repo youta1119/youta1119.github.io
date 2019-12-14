@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>自作os on youta1119&#39;s blog</title>
+    <title>自作OS on youta1119&#39;s blog</title>
     <link>https://youta1119.github.io/tags/%E8%87%AA%E4%BD%9Cos/</link>
-    <description>Recent content in 自作os on youta1119&#39;s blog</description>
+    <description>Recent content in 自作OS on youta1119&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <managingEditor>dev.youta1119@gmail.com (yota ogino)</managingEditor>
     <webMaster>dev.youta1119@gmail.com (yota ogino)</webMaster>
@@ -18,8 +18,7 @@
       <pubDate>Sun, 23 Dec 2018 00:00:00 +0000</pubDate>
       <author>dev.youta1119@gmail.com (yota ogino)</author>
       <guid>https://youta1119.github.io/post/2018/12/23/xv6-bootloader-written-by-rust/</guid>
-      <description>&lt;h2 id=&#34;はじめに&#34;&gt;はじめに&lt;/h2&gt;
-
+      <description>&lt;h2 id=&#34;heading&#34;&gt;はじめに&lt;/h2&gt;
 &lt;p&gt;大遅刻してすみません。
 この記事は&lt;a href=&#34;https://adventar.org/calendars/2915&#34;&gt;自作OSアドベントカレンダー&lt;/a&gt;９日目の記事です。
 ここ半年ぐらいxv6をrustで書き直すことに挑戦しているので、その話を書きます。この記事ではxv6のブートローダーの書き換えについて詳しく書きます。&lt;/p&gt;</description>

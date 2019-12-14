@@ -8,20 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
   <title>Kotlin/Nativeの標準ライブラリの実装を追いかける - youta1119&#39;s blog</title>
-  <meta property="og:title" content="Kotlin/Nativeの標準ライブラリの実装を追いかける" />
-  <meta name="twitter:title" content="Kotlin/Nativeの標準ライブラリの実装を追いかける" />
   <meta name="description" content="はじめに
-
-この記事はKotlinアドベントカレンダー24日目の記事です。
-Advent Calendarに空きがあったので投稿することにしました。
-この記事ではKotlin/Nativeの標準ライブラリの実装について解説します。">
-  <meta property="og:description" content="はじめに
-
-この記事はKotlinアドベントカレンダー24日目の記事です。
-Advent Calendarに空きがあったので投稿することにしました。
-この記事ではKotlin/Nativeの標準ライブラリの実装について解説します。">
-  <meta name="twitter:description" content="はじめに
-
 この記事はKotlinアドベントカレンダー24日目の記事です。
 Advent Calendarに空きがあったので投稿することにしました。
 この記事ではKotlin/Nativeの標準ライブラリの実装について解説します。">
@@ -29,16 +16,16 @@ Advent Calendarに空きがあったので投稿することにしました。
 {
     "@context": "http://schema.org",
     "@type": "WebSite",
-    "name": "youta1119&#39;s blog",
+    "name": "youta1119\x27s blog",
     
-    "url": "https://youta1119.github.io"
+    "url": "https:\/\/youta1119.github.io"
 }
 </script><script type="application/ld+json">
 {
   "@context": "http://schema.org",
   "@type": "Organization",
   "name": "",
-  "url": "https://youta1119.github.io"
+  "url": "https:\/\/youta1119.github.io"
   
   
   
@@ -53,15 +40,15 @@ Advent Calendarに空きがあったので投稿することにしました。
         "@type": "ListItem",
         "position": 1,
         "item": {
-          "@id": "https://youta1119.github.io",
+          "@id": "https:\/\/youta1119.github.io",
           "name": "home"
         }
     },{
         "@type": "ListItem",
         "position": 3,
         "item": {
-          "@id": "https://youta1119.github.io/post/2018/12/24/about-kotlin-native-stdlib/",
-          "name": "Kotlin/ nativeの標準ライブラリの実装を追いかける"
+          "@id": "https:\/\/youta1119.github.io\/post\/2018\/12\/24\/about-kotlin-native-stdlib\/",
+          "name": "Kotlin\/ nativeの標準ライブラリの実装を追いかける"
         }
     }]
 }
@@ -72,22 +59,21 @@ Advent Calendarに空きがあったので投稿することにしました。
   "author": {
     "name" : "yota ogino"
   },
-  "headline": "Kotlin/Nativeの標準ライブラリの実装を追いかける",
-  "description" : "はじめに この記事はKotlinアドベントカレンダー24日目の記事です。 Advent Calendarに空きがあったので投稿することにしました。 この記事ではKotlin/Nativeの標準ライブラリの実装について解説します。
-",
+  "headline": "Kotlin\/Nativeの標準ライブラリの実装を追いかける",
+  "description" : "はじめに この記事はKotlinアドベントカレンダー24日目の記事です。 Advent Calendarに空きがあったので投稿することにしました。 この記事ではKotlin\/Nativeの標準ライブラリの実装について解説します。\n",
   "inLanguage" : "en",
-  "wordCount": 2495,
+  "wordCount":  2495 ,
   "datePublished" : "2018-12-24T00:00:00",
   "dateModified" : "2018-12-24T00:00:00",
-  "image" : "https://youta1119.github.io/img/avatar.png",
-  "keywords" : [ "kotlin, kotlin/native" ],
-  "mainEntityOfPage" : "https://youta1119.github.io/post/2018/12/24/about-kotlin-native-stdlib/",
+  "image" : "https:\/\/youta1119.github.io\/img\/avatar.png",
+  "keywords" : [ "kotlin, kotlin\/native" ],
+  "mainEntityOfPage" : "https:\/\/youta1119.github.io\/post\/2018\/12\/24\/about-kotlin-native-stdlib\/",
   "publisher" : {
     "@type": "Organization",
-    "name" : "https://youta1119.github.io",
+    "name" : "https:\/\/youta1119.github.io",
     "logo" : {
         "@type" : "ImageObject",
-        "url" : "https://youta1119.github.io/img/avatar.png",
+        "url" : "https:\/\/youta1119.github.io\/img\/avatar.png",
         "height" :  60 ,
         "width" :  60
     }
@@ -97,7 +83,6 @@ Advent Calendarに空きがあったので投稿することにしました。
 
 <meta property="og:title" content="Kotlin/Nativeの標準ライブラリの実装を追いかける" />
 <meta property="og:description" content="はじめに
-
 この記事はKotlinアドベントカレンダー24日目の記事です。
 Advent Calendarに空きがあったので投稿することにしました。
 この記事ではKotlin/Nativeの標準ライブラリの実装について解説します。">
@@ -105,9 +90,9 @@ Advent Calendarに空きがあったので投稿することにしました。
 <meta property="og:url" content="https://youta1119.github.io/post/2018/12/24/about-kotlin-native-stdlib/" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="youta1119&#39;s blog" />
+
   <meta name="twitter:title" content="Kotlin/Nativeの標準ライブラリの実装を追いかける" />
   <meta name="twitter:description" content="はじめに
-
 この記事はKotlinアドベントカレンダー24日目の記事です。
 Advent Calendarに空きがあったので投稿することにしました。
 この記事ではKotlin/Nativeの標準ライブラリの実装について解説します。">
@@ -116,21 +101,10 @@ Advent Calendarに空きがあったので投稿することにしました。
   <meta name="twitter:site" content="@youta1119" />
   <meta name="twitter:creator" content="@youta1119" />
   <link href='https://youta1119.github.io/img/favicon.ico' rel='icon' type='image/x-icon'/>
-  <meta property="og:image" content="https://youta1119.github.io/img/avatar.png" />
-  <meta name="twitter:image" content="https://youta1119.github.io/img/avatar.png" />
-  <meta name="twitter:card" content="summary" />
-  <meta name="twitter:site" content="@youta1119" />
-  <meta name="twitter:creator" content="@youta1119" />
-  <meta property="og:url" content="https://youta1119.github.io/post/2018/12/24/about-kotlin-native-stdlib/" />
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="youta1119&#39;s blog" />
-
-  <meta name="generator" content="Hugo 0.52" />
-  <link rel="alternate" href="https://youta1119.github.io/index.xml" type="application/rss+xml" title="youta1119&#39;s blog">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
+  <meta name="generator" content="Hugo 0.61.0" />
+  <link rel="alternate" href="https://youta1119.github.io/index.xml" type="application/rss+xml" title="youta1119&#39;s blog"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.css" integrity="sha384-9eLZqc9ds8eNjO3TmqPeYcDj8n+Qfa4nuSiGYa6DjLNcv9BtN69ZIulL9+8CqC9Y" crossorigin="anonymous">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://youta1119.github.io/css/main.css" /><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"><link rel="stylesheet" href="https://youta1119.github.io/css/main.css" /><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" />
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" />
   <link rel="stylesheet" href="https://youta1119.github.io/css/highlight.min.css" /><link rel="stylesheet" href="https://youta1119.github.io/css/codeblock.css" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.css" integrity="sha384-h/L2W9KefUClHWaty3SLE5F/qvc4djlyR4qY3NUV5HGQBBW7stbcfff1+I/vmsHh" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/default-skin/default-skin.min.css" integrity="sha384-iD0dNku6PYSIQLyfTOpB06F2KCZJAKLOThS5HRe8b3ibhdEQ6eKsFf/EeFxdOt5R" crossorigin="anonymous">
@@ -296,7 +270,9 @@ if (!doNotTrack) {
     &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;2495&nbsp;words
   
   
-    &nbsp;|&nbsp;<i class="fas fa-user"></i>&nbsp;yota ogino
+    
+      &nbsp;|&nbsp;<i class="fas fa-user"></i>&nbsp;yota ogino
+    
   
   
 </span>
@@ -316,26 +292,19 @@ if (!doNotTrack) {
   <div class="row">
     <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
       <article role="main" class="blog-post">
-        <h2 id="はじめに">はじめに</h2>
-
+        <h2 id="heading">はじめに</h2>
 <p>この記事は<a href="https://qiita.com/advent-calendar/2018/kotlin">Kotlinアドベントカレンダー</a>24日目の記事です。
 Advent Calendarに空きがあったので投稿することにしました。
 この記事ではKotlin/Nativeの標準ライブラリの実装について解説します。</p>
-
-<h3 id="検証環境">検証環境</h3>
-
+<h3 id="heading-1">検証環境</h3>
 <ul>
 <li>Kotlin Native v1.0.3</li>
 <li>macOS  Mojave 10.14.2</li>
 </ul>
-
-<h2 id="kotlin-nativeとは">Kotlin/Nativeとは</h2>
-
+<h2 id="kotlinnative">Kotlin/Nativeとは</h2>
 <p>Kotlin/NativeはKotlinのコードをネイティブバイナリにコンパイルしてくれるものです。
 各プラットフォーム・アーキテクチャ向けのネイティブバイナリが生成されるので、Jvm KotlinのようなVM環境なども必要なく、ネイティブ環境のままで動作します。</p>
-
 <p>現在は以下のプラットフォームがサポートされています。</p>
-
 <ul>
 <li>iOS (arm32, arm64, emulator x86_64)</li>
 <li>macOS (x86_64)</li>
@@ -344,13 +313,11 @@ Advent Calendarに空きがあったので投稿することにしました。
 <li>Linux (x86_64, arm32, MIPS, MIPS little endian)</li>
 <li>WebAssembly (wasm32)</li>
 </ul>
-
-<h2 id="kotlin-nativeの標準ライブラリの実装について">Kotlin/Nativeの標準ライブラリの実装について</h2>
-
+<h2 id="kotlinnative-1">Kotlin/Nativeの標準ライブラリの実装について</h2>
 <p>Kotlin/Nativeの標準ライブラリの実装の解説の前にKotlin/Nativeの<a href="https://github.com/JetBrains/kotlin-native">リポジトリ</a>の構造について解説したいと思います。
 Kotlin/Nativeのリポジトリの構造は以下のようになっていて、直下のディレクトリgradleモジュールになっています。
 ソースコードを軽く読んでみた感じそれぞれのモジュールは以下のような役割をもっているです。</p>
-<div class="highlight"><pre class="chroma">.
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">.
 ├── Interop c言語との相互運用のためのモジュール
 ├── backend.native コンパイラ本体
 ├── buildSrc
@@ -369,27 +336,23 @@ Kotlin/Nativeのリポジトリの構造は以下のようになっていて、�
 ├── runtime　標準ライブラリとプログラムランチャーの実装
 ├── samples
 ├── shared
-├── tools</pre></div>
-<p>今回はKotlin/Nativeの標準ライブラリの実装の解説ですので、runtimeモジュールを見ていきます。
+├── tools
+</code></pre></div><p>今回はKotlin/Nativeの標準ライブラリの実装の解説ですので、runtimeモジュールを見ていきます。
 Kotlin/Nativeの標準ライブラリの実装はruntimeモジュールの<code>src/main</code>以下にあります。
 <code>src/main</code>のディレクトリ構造はこのようになっています。</p>
-<div class="highlight"><pre class="chroma">.
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">.
 ├── cpp
 ├── js
     ├── math.js kotlin.mathをjavascriptのMath関数で置き換えてる(今回は取り扱わない)
-└── kotlin</pre></div>
-<p>ディレクトリ構造からお察しだと思いますが、<strong>なんとKotlin/Nativeの標準ライブラリではC++も使われています。</strong></p>
-
+└── kotlin
+</code></pre></div><p>ディレクトリ構造からお察しだと思いますが、<strong>なんとKotlin/Nativeの標準ライブラリではC++も使われています。</strong></p>
 <p>調べてみたところKotlin/Nativeの標準ライブラリの実装方法には2種類の方法があるようです。</p>
-
 <ul>
 <li>C++とKotlinがミックスされて実装されているもの</li>
 <li>Kotlinのみで実装されているもの</li>
 </ul>
-
 <p>Kotlinのみで実装されているものに関しては、普通のKotlinプログラムですので特に解説はしません。
 例として<a href="https://github.com/JetBrains/kotlin-native/tree/v1.0.3/runtime/src/main/kotlin/kotlin/ranges">ranges</a>, <a href="https://github.com/JetBrains/kotlin-native/tree/v1.0.3/runtime/src/main/kotlin/kotlin/coroutines">coroutines</a>があります。</p>
-
 <p>C++とKotlinがミックスされて実装されているものについて解説したいと思います。
 C++とKotlinがミックスされて実装されているものの例として<a href="https://github.com/JetBrains/kotlin-native/blob/v1.0.3/runtime/src/main/kotlin/kotlin/String.kt">Stringクラス</a>があります。
 標準ライブラリのStringの実装はこのようになっています。</p>
@@ -400,79 +363,74 @@ C++とKotlinがミックスされて実装されているものの例として<a
 
 <span class="n">@ExportTypeInfo</span><span class="p">(</span><span class="s">&#34;theStringTypeInfo&#34;</span><span class="p">)</span> <span class="c1">//Objective-Cとの相互運用で必要ぽい
 </span><span class="c1"></span><span class="n">@Frozen</span> <span class="c1">//thread/worker
-</span><span class="c1"></span><span class="k">public</span> <span class="k">final</span> <span class="k">class</span> <span class="nc">String</span> <span class="p">:</span> <span class="n">Comparable</span><span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;,</span> <span class="n">CharSequence</span> <span class="p">{</span>
+</span><span class="c1"></span><span class="k">public</span> <span class="k">final</span> <span class="k">class</span> <span class="nc">String</span> <span class="p">:</span> <span class="n">Comparable</span><span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;</span><span class="p">,</span> <span class="n">CharSequence</span> <span class="p">{</span>
     <span class="k">public</span> <span class="k">companion</span> <span class="k">object</span> <span class="p">{</span>
     <span class="p">}</span>
 
     <span class="n">@SymbolName</span><span class="p">(</span><span class="s">&#34;Kotlin_String_hashCode&#34;</span><span class="p">)</span>
-    <span class="k">external</span> <span class="k">public</span> <span class="k">override</span> <span class="k">fun</span> <span class="nf">hashCode</span><span class="p">():</span> <span class="n">Int</span>
+    <span class="k">external</span> <span class="k">public</span> <span class="k">override</span> <span class="k">fun</span> <span class="nf">hashCode</span><span class="p">(</span><span class="p">)</span><span class="p">:</span> <span class="n">Int</span>
 
-    <span class="k">public</span> <span class="k">operator</span> <span class="k">fun</span> <span class="nf">plus</span><span class="p">(</span><span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">?):</span> <span class="n">String</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="n">plusImpl</span><span class="p">(</span><span class="n">other</span><span class="p">.</span><span class="n">toString</span><span class="p">())</span>
+    <span class="k">public</span> <span class="k">operator</span> <span class="k">fun</span> <span class="nf">plus</span><span class="p">(</span><span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">?</span><span class="p">)</span><span class="p">:</span> <span class="n">String</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">plusImpl</span><span class="p">(</span><span class="n">other</span><span class="p">.</span><span class="n">toString</span><span class="p">(</span><span class="p">)</span><span class="p">)</span>
     <span class="p">}</span>
 
-    <span class="k">override</span> <span class="k">public</span> <span class="k">fun</span> <span class="nf">toString</span><span class="p">():</span> <span class="n">String</span> <span class="p">{</span>
+    <span class="k">override</span> <span class="k">public</span> <span class="k">fun</span> <span class="nf">toString</span><span class="p">(</span><span class="p">)</span><span class="p">:</span> <span class="n">String</span> <span class="p">{</span>
         <span class="k">return</span> <span class="k">this</span>
     <span class="p">}</span>
 
     <span class="k">public</span> <span class="k">override</span> <span class="k">val</span> <span class="py">length</span><span class="p">:</span> <span class="n">Int</span>
-        <span class="k">get</span><span class="p">()</span> <span class="p">=</span> <span class="n">getStringLength</span><span class="p">()</span>
+        <span class="k">get</span><span class="p">(</span><span class="p">)</span> <span class="p">=</span> <span class="n">getStringLength</span><span class="p">(</span><span class="p">)</span>
 
     <span class="n">@SymbolName</span><span class="p">(</span><span class="s">&#34;Kotlin_String_get&#34;</span><span class="p">)</span>
-    <span class="k">external</span> <span class="k">override</span> <span class="k">public</span> <span class="k">fun</span> <span class="nf">get</span><span class="p">(</span><span class="n">index</span><span class="p">:</span> <span class="n">Int</span><span class="p">):</span> <span class="n">Char</span>
+    <span class="k">external</span> <span class="k">override</span> <span class="k">public</span> <span class="k">fun</span> <span class="nf">get</span><span class="p">(</span><span class="n">index</span><span class="p">:</span> <span class="n">Int</span><span class="p">)</span><span class="p">:</span> <span class="n">Char</span>
 
     <span class="n">@SymbolName</span><span class="p">(</span><span class="s">&#34;Kotlin_String_subSequence&#34;</span><span class="p">)</span>
-    <span class="k">external</span> <span class="k">override</span> <span class="k">public</span> <span class="k">fun</span> <span class="nf">subSequence</span><span class="p">(</span><span class="n">startIndex</span><span class="p">:</span> <span class="n">Int</span><span class="p">,</span> <span class="n">endIndex</span><span class="p">:</span> <span class="n">Int</span><span class="p">):</span> <span class="n">CharSequence</span>
+    <span class="k">external</span> <span class="k">override</span> <span class="k">public</span> <span class="k">fun</span> <span class="nf">subSequence</span><span class="p">(</span><span class="n">startIndex</span><span class="p">:</span> <span class="n">Int</span><span class="p">,</span> <span class="n">endIndex</span><span class="p">:</span> <span class="n">Int</span><span class="p">)</span><span class="p">:</span> <span class="n">CharSequence</span>
 
     <span class="n">@SymbolName</span><span class="p">(</span><span class="s">&#34;Kotlin_String_compareTo&#34;</span><span class="p">)</span>
-    <span class="k">override</span> <span class="k">external</span> <span class="k">public</span> <span class="k">fun</span> <span class="nf">compareTo</span><span class="p">(</span><span class="n">other</span><span class="p">:</span> <span class="n">String</span><span class="p">):</span> <span class="n">Int</span>
+    <span class="k">override</span> <span class="k">external</span> <span class="k">public</span> <span class="k">fun</span> <span class="nf">compareTo</span><span class="p">(</span><span class="n">other</span><span class="p">:</span> <span class="n">String</span><span class="p">)</span><span class="p">:</span> <span class="n">Int</span>
 
     <span class="n">@SymbolName</span><span class="p">(</span><span class="s">&#34;Kotlin_String_getStringLength&#34;</span><span class="p">)</span>
-    <span class="k">external</span> <span class="k">private</span> <span class="k">fun</span> <span class="nf">getStringLength</span><span class="p">():</span> <span class="n">Int</span>
+    <span class="k">external</span> <span class="k">private</span> <span class="k">fun</span> <span class="nf">getStringLength</span><span class="p">(</span><span class="p">)</span><span class="p">:</span> <span class="n">Int</span>
 
     <span class="n">@SymbolName</span><span class="p">(</span><span class="s">&#34;Kotlin_String_plusImpl&#34;</span><span class="p">)</span>
-    <span class="k">external</span> <span class="k">private</span> <span class="k">fun</span> <span class="nf">plusImpl</span><span class="p">(</span><span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span> <span class="n">String</span>
+    <span class="k">external</span> <span class="k">private</span> <span class="k">fun</span> <span class="nf">plusImpl</span><span class="p">(</span><span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span><span class="p">:</span> <span class="n">String</span>
 
     <span class="n">@SymbolName</span><span class="p">(</span><span class="s">&#34;Kotlin_String_equals&#34;</span><span class="p">)</span>
-    <span class="k">external</span> <span class="k">public</span> <span class="k">override</span> <span class="k">fun</span> <span class="nf">equals</span><span class="p">(</span><span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">?):</span> <span class="n">Boolean</span>
-<span class="p">}</span></code></pre></div>
-<p>いろいろツッコミどころがあると思いますが一旦無視して、Stringクラスのgetメソッドに注目します。</p>
+    <span class="k">external</span> <span class="k">public</span> <span class="k">override</span> <span class="k">fun</span> <span class="nf">equals</span><span class="p">(</span><span class="n">other</span><span class="p">:</span> <span class="n">Any</span><span class="p">?</span><span class="p">)</span><span class="p">:</span> <span class="n">Boolean</span>
+<span class="p">}</span>
+</code></pre></div><p>いろいろツッコミどころがあると思いますが一旦無視して、Stringクラスのgetメソッドに注目します。</p>
 <div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="n">@SymbolName</span><span class="p">(</span><span class="s">&#34;Kotlin_String_get&#34;</span><span class="p">)</span>
-<span class="k">external</span> <span class="k">override</span> <span class="k">public</span> <span class="k">fun</span> <span class="nf">get</span><span class="p">(</span><span class="n">index</span><span class="p">:</span> <span class="n">Int</span><span class="p">):</span> <span class="n">Char</span></code></pre></div>
-<p>関数の頭に<code>external</code>がついてますね、これはメソッドの定義が外部ファイルにあることをコンパイラに伝えるためのです。
+<span class="k">external</span> <span class="k">override</span> <span class="k">public</span> <span class="k">fun</span> <span class="nf">get</span><span class="p">(</span><span class="n">index</span><span class="p">:</span> <span class="n">Int</span><span class="p">)</span><span class="p">:</span> <span class="n">Char</span>
+</code></pre></div><p>関数の頭に<code>external</code>がついてますね、これはメソッドの定義が外部ファイルにあることをコンパイラに伝えるためのです。
 おそらくC言語<code>extern</code>と同様のものだと思われます。</p>
-
 <p>では実際の関数の定義はどこにあるのでしょうか？<code>@SymbolName</code>という謎のアノテーションが関数についてますね。
 実はこれ、C++の関数名と対応していて、getメソッドが呼ばれるとC++の関数<code>Kotlin_String_get</code>が呼ばれるようになっています。
 ちなみに、<code>Kotlin_String_get</code>のC++での<a href="https://github.com/JetBrains/kotlin-native/blob/v1.0.3/runtime/src/main/cpp/KString.cpp#L763">実装</a>はこうなっています。</p>
 <div class="highlight"><pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">KChar</span> <span class="nf">Kotlin_String_get</span><span class="p">(</span><span class="n">KString</span> <span class="n">thiz</span><span class="p">,</span> <span class="n">KInt</span> <span class="n">index</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">if</span> <span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">uint32_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">thiz</span><span class="o">-&gt;</span><span class="n">count_</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">ThrowArrayIndexOutOfBoundsException</span><span class="p">();</span>
+  <span class="k">if</span> <span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="o">&gt;</span><span class="o">=</span> <span class="n">thiz</span><span class="o">-</span><span class="o">&gt;</span><span class="n">count_</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">ThrowArrayIndexOutOfBoundsException</span><span class="p">(</span><span class="p">)</span><span class="p">;</span>
   <span class="p">}</span>
-  <span class="k">return</span> <span class="o">*</span><span class="n">CharArrayAddressOfElementAt</span><span class="p">(</span><span class="n">thiz</span><span class="p">,</span> <span class="n">index</span><span class="p">);</span>
+  <span class="k">return</span> <span class="o">*</span><span class="n">CharArrayAddressOfElementAt</span><span class="p">(</span><span class="n">thiz</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre></div>
-<p>このようにC++とKotlinがミックスされて実装されているものは、Kotlin側では関数の定義のみを行い、関数の実装はC++側で実装するという形になってます。
+</code></pre></div><p>このようにC++とKotlinがミックスされて実装されているものは、Kotlin側では関数の定義のみを行い、関数の実装はC++側で実装するという形になってます。
 このとき<code>@SymbolName</code>アノテーションの引数で指定した関数を呼び出すようなコードを生成するのは、コンパイラが行っています。</p>
-
-<h3 id="検証してみる">検証してみる</h3>
-
+<h3 id="heading-2">検証してみる</h3>
 <p>本当にKotlin側でStringクラスのgetメソッドがよばれたらC++の関数が呼ばれるのか検証したいと思います。
 ものすごく簡単なコードを用意しました。</p>
-<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">fun</span> <span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="n">Array</span><span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;)</span> <span class="p">{</span>
+<div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">fun</span> <span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="n">Array</span><span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">val</span> <span class="py">s</span> <span class="p">=</span> <span class="s">&#34;hoge&#34;</span>
-    <span class="n">println</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="m">0</span><span class="p">))</span>
-<span class="p">}</span></code></pre></div>
-<p>コンパイルして動かしてみます。</p>
+    <span class="n">println</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="k">get</span><span class="p">(</span><span class="m">0</span><span class="p">)</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div><p>コンパイルして動かしてみます。</p>
 <div class="highlight"><pre class="chroma"><code class="language-bash" data-lang="bash">$ kotlinc-native main.kt
-$ ./program.kexe</code></pre></div>
-<p><code>h</code>が出力されるはずです。</p>
-
+$ ./program.kexe
+</code></pre></div><p><code>h</code>が出力されるはずです。</p>
 <p>さて本当に<code>Kotlin_String_get</code>が呼ばれてるのか,アセンブリを見てみましょう。</p>
-<div class="highlight"><pre class="chroma">objdump -S program.kexe  &gt; dump.asm</pre></div>
-<p>objdumpでアセンブリを出力します。めちゃくちゃ長いアセンブリが出力されます(17万行)。
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">objdump -S program.kexe  &gt; dump.asm
+</code></pre></div><p>objdumpでアセンブリを出力します。めちゃくちゃ長いアセンブリが出力されます(17万行)。
 9万行目くらいにmain関数のアセンブリをみつけました。</p>
-<div class="highlight"><pre class="chroma">_kfun:main(kotlin.Array&lt;kotlin.String&gt;):
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">_kfun:main(kotlin.Array&lt;kotlin.String&gt;):
 1000080a0:	55 	pushq	%rbp
 1000080a1:	48 89 e5 	movq	%rsp, %rbp
 1000080a4:	53 	pushq	%rbx
@@ -509,11 +467,10 @@ $ ./program.kexe</code></pre></div>
 10000811e:	e8 0d 3a 04 00 	callq	277005 &lt;_LeaveFrame&gt;
 100008123:	48 89 df 	movq	%rbx, %rdi
 100008126:	e8 ed 7b 04 00 	callq	293869
-10000812b:	0f 1f 44 00 00 	nopl	(%rax,%rax)</pre></div>
-<p>main関数のアセンブリをじっくりみていくとありました。ちゃん<code>Kotlin_String_get</code>が呼ばれてますね。</p>
-<div class="highlight"><pre class="chroma">1000080db:	e8 10 09 04 00 	callq	264464 &lt;_Kotlin_String_get&gt;</pre></div>
-<h2 id="終わりに">終わりに</h2>
-
+10000812b:	0f 1f 44 00 00 	nopl	(%rax,%rax)
+</code></pre></div><p>main関数のアセンブリをじっくりみていくとありました。ちゃん<code>Kotlin_String_get</code>が呼ばれてますね。</p>
+<div class="highlight"><pre class="chroma"><code class="language-fallback" data-lang="fallback">1000080db:	e8 10 09 04 00 	callq	264464 &lt;_Kotlin_String_get&gt;
+</code></pre></div><h2 id="heading-3">終わりに</h2>
 <p>今度気が向いたらKotlinのコードがKotlin/Nativeのコンパイラ上でどのようにネイティブバイナリに変換されるかについて詳しく書こうと思います。
 需要ありますかね？</p>
 
@@ -539,13 +496,6 @@ $ ./program.kexe</code></pre></div>
       <li>
         <a href="//twitter.com/share?url=https%3a%2f%2fyouta1119.github.io%2fpost%2f2018%2f12%2f24%2fabout-kotlin-native-stdlib%2f&amp;text=Kotlin%2fNative%e3%81%ae%e6%a8%99%e6%ba%96%e3%83%a9%e3%82%a4%e3%83%96%e3%83%a9%e3%83%aa%e3%81%ae%e5%ae%9f%e8%a3%85%e3%82%92%e8%bf%bd%e3%81%84%e3%81%8b%e3%81%91%e3%82%8b&amp;via=youta1119" target="_blank" title="Share on Twitter">
           <i class="fab fa-twitter"></i>
-        </a>
-      </li>
-  
-      
-      <li>
-        <a href="//plus.google.com/share?url=https%3a%2f%2fyouta1119.github.io%2fpost%2f2018%2f12%2f24%2fabout-kotlin-native-stdlib%2f" target="_blank" title="Share on Google Plus">
-          <i class="fab fa-google-plus"></i>
         </a>
       </li>
   
@@ -586,12 +536,27 @@ $ ./program.kexe</code></pre></div>
     </ul>
   </div>
   
+
               </div>
             </section>
         
 
         
           
+            
+          
+
+          
+                  <h4 class="see-also">See also</h4>
+                  <ul>
+                
+                
+                    <li><a href="/post/2019/12/14/how-to-create-own-kotlin-compiler/">自作Kotlinコンパイラの作り方</a></li>
+                
+                    <li><a href="/post/2019/06/10/kotlin-fest-2019-cfp/">「Kotlin/Nativeはなぜ動くのか？」というタイトルでKotlin FestのCfpに応募した</a></li>
+                
+              </ul>
+
           
         
       </article>
@@ -635,7 +600,8 @@ $ ./program.kexe</code></pre></div>
   </div>
 </div>
 
-    <footer>
+      
+<footer>
   <div class="container">
     <div class="row">
       <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
@@ -667,9 +633,7 @@ $ ./program.kexe</code></pre></div>
               </li>
           
           <li>
-            
-            <a href="https://youta1119.github.io/index.xml" title="RSS">
-            
+            <a href="" title="RSS">
               <span class="fa-stack fa-lg">
                 <i class="fas fa-circle fa-stack-2x"></i>
                 <i class="fas fa-rss fa-stack-1x fa-inverse"></i>
@@ -697,25 +661,23 @@ $ ./program.kexe</code></pre></div>
         </p>
         
         <p class="credits theme-by text-muted">
-          <a href="http://gohugo.io">Hugo v0.52</a> powered &nbsp;&bull;&nbsp; Theme by <a href="http://deanattali.com/beautiful-jekyll/">Beautiful Jekyll</a> adapted to <a href="https://github.com/halogenica/beautifulhugo">Beautiful Hugo</a>
+          <a href="https://gohugo.io">Hugo v0.61.0</a> powered &nbsp;&bull;&nbsp; Theme <a href="https://github.com/halogenica/beautifulhugo">Beautiful Hugo</a> adapted from <a href="https://deanattali.com/beautiful-jekyll/">Beautiful Jekyll</a>
           
         </p>
       </div>
     </div>
   </div>
-</footer>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
+</footer><script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/katex.min.js" integrity="sha384-K3vbOmF2BtaVai+Qk37uypf7VrgBubhQreNQe9aGsz9lB63dIFiQVlJbr92dw2Lx" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.10.0/contrib/auto-render.min.js" integrity="sha384-kmZOZB5ObwgQnS/DuDg6TScgOiWWBiVt0plIRkZCmE6rDZGrEOQeHM5PcHi+nyqe" crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
 <script src="https://youta1119.github.io/js/main.js"></script>
 <script src="https://youta1119.github.io/js/highlight.min.js"></script>
 <script> hljs.initHighlightingOnLoad(); </script>
-<script> $(document).ready(function() {$("pre.chroma").css("padding","0");}); </script><script> renderMathInElement(document.body); </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.js" integrity="sha384-QELNnmcmU8IR9ZAykt67vGr9/rZJdHbiWi64V88fCPaOohUlHCqUD/unNN0BXSqy" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe-ui-default.min.js" integrity="sha384-m67o7SkQ1ALzKZIFh4CiTA8tmadaujiTa9Vu+nqPSwDOqHrDmxLezTdFln8077+q" crossorigin="anonymous"></script>
-<script src="https://youta1119.github.io/js/load-photoswipe.js"></script>
+<script> $(document).ready(function() {$("pre.chroma").css("padding","0");}); </script><script> renderMathInElement(document.body); </script><script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe.min.js" integrity="sha384-QELNnmcmU8IR9ZAykt67vGr9/rZJdHbiWi64V88fCPaOohUlHCqUD/unNN0BXSqy" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/photoswipe/4.1.2/photoswipe-ui-default.min.js" integrity="sha384-m67o7SkQ1ALzKZIFh4CiTA8tmadaujiTa9Vu+nqPSwDOqHrDmxLezTdFln8077+q" crossorigin="anonymous"></script><script src="https://youta1119.github.io/js/load-photoswipe.js"></script>
+
 
 
 
@@ -746,6 +708,7 @@ $(function(){
 
 
 
+    
   </body>
 </html>
 
