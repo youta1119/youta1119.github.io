@@ -61,7 +61,7 @@
   "headline": "自作Kotlinコンパイラの作り方",
   "description" : "はじめに 少し遅刻しましたが、これはKotlin Advent Calendar 201914日目の記事です。 少し前からkotlinc-dotnetというKotlinを.Netで動くexe形式にコンパイルするコンパイラを作っていて、kotlinのコンパイラ周りの知見が溜まってきたので、この記事では自作Kotlinコンパイラの作り方を解説します\n",
   "inLanguage" : "en",
-  "wordCount":  5565 ,
+  "wordCount":  5579 ,
   "datePublished" : "2019-12-14T21:00:11",
   "dateModified" : "2019-12-14T21:00:11",
   "image" : "https:\/\/youta1119.github.io\/img\/avatar.png",
@@ -263,7 +263,7 @@ if (!doNotTrack) {
     &nbsp;|&nbsp;<i class="fas fa-clock"></i>&nbsp;12&nbsp;minutes
   
   
-    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;5565&nbsp;words
+    &nbsp;|&nbsp;<i class="fas fa-book"></i>&nbsp;5579&nbsp;words
   
   
     
@@ -918,7 +918,7 @@ Astとはコードをパースした抽象構文木のことでKotlinの場合�
     <span class="k">private</span> <span class="k">val</span> <span class="py">STDLIB_MODULE_NAME</span> <span class="p">=</span> <span class="n">Name</span><span class="p">.</span><span class="n">special</span><span class="p">(</span><span class="s">&#34;&lt;stdlib&gt;&#34;</span><span class="p">)</span>
 <span class="p">}</span>
 </code></pre></div><h3 id="step6-astkotlin-ir">step6. AstとKotlin IRに変換する</h3>
-<p>step6での変更点は<a href="13623195b03f5ab03638e81c22330ea164ea4a68">こちら</a></p>
+<p>step6での変更点は<a href="https://github.com/youta1119/kotlin-toy-compiler/commit/13623195b03f5ab03638e81c22330ea164ea4a68">こちら</a></p>
 <p>ソースコードをパースしてAst(Psi)に変換することができたので、次はAstをIR(中間表現)に変換するPsiToIrフェーズを作っていきます。ついでに変換したIRを見るためにDumpIrフェーズを作ります。</p>
 <p>Astには<code>=,-,+,/</code>などの余分な構文情報を含んでいるため、余分な構文情報を取り除いて抽象度を上げるため、AstをIR(中間表現)に変換します。IR(中間表現)はASTから余分な構文情報を取り除いて抽象度を上げたものです。</p>
 <div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="c1">//CompilerPhases.kt
@@ -954,6 +954,7 @@ Astとはコードをパースした抽象構文木のことでKotlinの場合�
 </code></pre></div><p>これでAstとKotlin IRに変換する部分は完成です。この状態で自作コンパイラを実行すると以下のような感じで変換されてIRが表示されます。</p>
 <!-- raw HTML omitted -->
 <h3 id="step7-kotlin-irnet-bytecode">step7. Kotlin IRを.Net ByteCodeに変換する</h3>
+<p>step7での変更点は<a href="https://github.com/youta1119/kotlin-toy-compiler/commit/80a08aa159fc950b858662fb99c1c51ac8f6caaa">こちら</a></p>
 <p>IRを生成することができたのでIRの情報を使って.Netアセンブリを生成するIrToDotNetAsmフェーズと.Netアセンブリとexeに変換するGenerateByteCodeフェーズを作っていきます。</p>
 <div class="highlight"><pre class="chroma"><code class="language-kotlin" data-lang="kotlin"><span class="k">internal</span> <span class="k">val</span> <span class="py">irToCILPhase</span> <span class="p">=</span> <span class="n">createUnitPhase</span><span class="p">(</span>
     <span class="n">op</span> <span class="p">=</span> <span class="p">{</span>
